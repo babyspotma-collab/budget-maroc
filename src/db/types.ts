@@ -36,7 +36,9 @@ export interface Budget {
   id?: number
   categoryId: number
   month: string
+  /** Plafond en centimes ; 0 = pas de budget à partir de ce mois. */
   limitCents: number
+  demo?: boolean
 }
 
 export interface MonthlyIncome {

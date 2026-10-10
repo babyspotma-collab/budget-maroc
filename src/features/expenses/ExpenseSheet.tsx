@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, Field, Sheet } from '../../components/ui'
+import { usePrefs } from '../../app/prefs'
 import { useToast } from '../../app/toast'
 import type { Expense } from '../../db/types'
 import { sortByRecentUse } from '../../domain/categories'
-import { isValidISODate, todayISO } from '../../domain/dates'
+import { isValidISODate, monthOf, todayISO } from '../../domain/dates'
+import { budgetCrossing, type Crossing } from '../budgets/actions'
 import { centsToInput, parseMAD } from '../../domain/money'
 import { CategoryIcon } from '../categories/CategoryIcon'
 import { useCategories, useCategoryLabel } from '../categories/hooks'
@@ -25,6 +27,7 @@ interface ExpenseSheetProps {
 export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
   const { t } = useTranslation()
   const toast = useToast()
+  const { num } = usePrefs()
   const label = useCategoryLabel()
   const categories = useCategories()
   const recent = useRecentExpenses(30)
@@ -66,17 +69,32 @@ export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
     return cents
   }
 
+  /** Texte d'alerte budget (« Courses : 82 % du budget atteint »), à joindre au message. */
+  function alertText(crossing: Crossing | null, forCategory: number): string | null {
+    if (!crossing) return null
+    const name = label(categories?.find((c) => c.id === forCategory))
+    return crossing.level === 'over'
+      ? t('budgets.toastOver', { name })
+      : t('budgets.toastWarn', {
+          name,
+          pct: num(Math.floor((crossing.spentAfterCents * 100) / crossing.limitCents)),
+        })
+  }
+
   async function saveNew(chosenCategory: number) {
     const cents = readAmount()
     if (cents === null) return
+    const day = isValidISODate(date) ? date : todayISO()
+    const crossing = await budgetCrossing(chosenCategory, day, cents)
     const id = await addExpense({
       amountCents: cents,
       categoryId: chosenCategory,
-      date: isValidISODate(date) ? date : todayISO(),
+      date: day,
       note: note.trim() || undefined,
     })
     onClose()
-    toast.show(t('add.saved'), {
+    const warning = alertText(crossing, chosenCategory)
+    toast.show(warning ? `${t('add.saved')} · ⚠ ${warning}` : t('add.saved'), {
       actionLabel: t('common.undo'),
       onAction: () => void deleteExpense(id),
     })
@@ -85,14 +103,23 @@ export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
   async function saveEdit() {
     const cents = readAmount()
     if (cents === null || expense?.id === undefined || categoryId === null) return
+    const day = isValidISODate(date) ? date : expense.date
+    // Même catégorie et même mois : seul l'écart compte pour l'alerte.
+    const sameBucket = expense.categoryId === categoryId && monthOf(expense.date) === monthOf(day)
+    const crossing = await budgetCrossing(
+      categoryId,
+      day,
+      sameBucket ? cents - expense.amountCents : cents,
+    )
     await updateExpense(expense.id, {
       amountCents: cents,
       categoryId,
-      date: isValidISODate(date) ? date : expense.date,
+      date: day,
       note: note.trim() || undefined,
     })
     onClose()
-    toast.show(t('add.updated'))
+    const warning = alertText(crossing, categoryId)
+    toast.show(warning ? `${t('add.updated')} · ⚠ ${warning}` : t('add.updated'))
   }
 
   async function remove() {

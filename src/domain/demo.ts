@@ -4,7 +4,17 @@ import { currentMonth } from './dates'
 export const DEMO_EXPENSE_COUNT = 30
 export const DEMO_INCOME_CENTS = 950_000 // 9 500 MAD
 
-type Spec = [note: string, minMAD: number, maxMAD: number]
+/** Plafonds mensuels de démo (MAD), par clé de catégorie prédéfinie. */
+export const DEMO_BUDGETS_MAD: Record<string, number> = {
+  rent: 2800,
+  groceries: 2000,
+  transport: 700,
+  outings: 600,
+  health: 500,
+  utilities: 300,
+}
+
+type Spec =[note: string, minMAD: number, maxMAD: number]
 
 const RANDOM_SPECS: { key: string; count: number; items: Spec[] }[] = [
   {

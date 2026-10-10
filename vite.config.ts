@@ -3,7 +3,9 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Sous GitHub Pages l'app est servie sous /budget-maroc/ (variable BASE_PATH du workflow).
 export default defineConfig({
+  base: process.env.BASE_PATH ?? '/',
   plugins: [
     react(),
     tailwindcss(),
@@ -15,7 +17,6 @@ export default defineConfig({
         short_name: 'Budget',
         description: 'Suivi de budget personnel, daret et dettes',
         lang: 'fr',
-        start_url: '/',
         display: 'standalone',
         background_color: '#f4f5fa',
         theme_color: '#f4f5fa',

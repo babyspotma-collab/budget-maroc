@@ -1,6 +1,9 @@
 {
   "app": { "name": "Budget Maroc" },
+  "common": { "close": "Fermer" },
+  "add": { "title": "Nouvelle dépense", "soon": "Le formulaire d'ajout rapide arrive à l'étape 2." },
   "nav": {
+    "label": "Navigation principale",
     "home": "Accueil",
     "budgets": "Budgets",
     "stats": "Stats",
@@ -36,3 +39,4 @@
     "other": "Autres"
   }
 }
+

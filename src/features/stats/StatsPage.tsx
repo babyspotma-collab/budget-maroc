@@ -1,11 +1,14 @@
 import { useTranslation } from 'react-i18next'
+import { Card, PageHeader } from '../../components/ui'
 
 export function StatsPage() {
   const { t } = useTranslation()
   return (
-    <section className="space-y-3">
-      <h1 className="text-2xl font-bold">{t('stats.title')}</h1>
-      <p className="text-slate-600">{t('stats.placeholder')}</p>
-    </section>
+    <>
+      <PageHeader title={t('stats.title')} />
+      <Card>
+        <p className="text-muted">{t('stats.placeholder')}</p>
+      </Card>
+    </>
   )
 }

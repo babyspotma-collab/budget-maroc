@@ -22,11 +22,13 @@ export function formatMAD(cents: number, { lang, numerals }: MoneyFormatOptions)
   const base = lang === 'ar' ? 'ar-MA' : 'fr-FR'
   const locale = `${base}-u-nu-${numerals}`
   const whole = cents % 100 === 0
-  return new Intl.NumberFormat(locale, {
+  const text = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'MAD',
     currencyDisplay: lang === 'ar' ? 'symbol' : 'code',
     minimumFractionDigits: whole ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(centsToMAD(cents))
+  // L'espace fine insécable (U+202F) manque dans certaines polices : on la remplace par une NBSP.
+  return text.replace(/ /g, ' ')
 }

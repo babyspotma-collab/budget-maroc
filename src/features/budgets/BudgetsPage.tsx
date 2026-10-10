@@ -1,11 +1,14 @@
 import { useTranslation } from 'react-i18next'
+import { Card, PageHeader } from '../../components/ui'
 
 export function BudgetsPage() {
   const { t } = useTranslation()
   return (
-    <section className="space-y-3">
-      <h1 className="text-2xl font-bold">{t('budgets.title')}</h1>
-      <p className="text-slate-600">{t('budgets.placeholder')}</p>
-    </section>
+    <>
+      <PageHeader title={t('budgets.title')} />
+      <Card>
+        <p className="text-muted">{t('budgets.placeholder')}</p>
+      </Card>
+    </>
   )
 }

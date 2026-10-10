@@ -1,8 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
-import '@fontsource-variable/inter'
-import '@fontsource-variable/cairo'
+import '@fontsource-variable/readex-pro'
+import '@fontsource-variable/fraunces'
 import './styles/index.css'
 import './i18n'
 import { App } from './app/App'
@@ -14,3 +14,4 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+

@@ -95,7 +95,24 @@
     "removed": "Budget retiré",
     "error": "Saisissez un montant supérieur à 0."
   },
-  "stats": { "title": "Statistiques", "placeholder": "Camembert et courbe du mois arrivent à l'étape 4." },
+  "stats": {
+    "title": "Statistiques",
+    "total": "Total dépensé",
+    "perDay": "Par jour",
+    "count": "Dépenses",
+    "topCategory": "N° 1",
+    "changeUp": "{{pct}} % de plus que le mois précédent",
+    "changeDown": "{{pct}} % de moins que le mois précédent",
+    "changeSame": "Identique au mois précédent",
+    "byCategory": "Répartition par catégorie",
+    "others": "Autres catégories",
+    "curveTitle": "Dépenses cumulées",
+    "day": "Jour {{day}}",
+    "dayCol": "Jour",
+    "showTable": "Afficher le tableau",
+    "emptyTitle": "Rien à analyser pour l'instant",
+    "emptyBody": "Les graphiques apparaissent dès que vous ajoutez des dépenses."
+  },
   "more": {
     "title": "Plus",
     "expensesLink": "Dépenses du mois",

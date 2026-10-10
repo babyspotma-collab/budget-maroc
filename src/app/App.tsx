@@ -1,6 +1,9 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { PrefsProvider } from './prefs'
+import { ToastProvider } from './toast'
+import { ExpensesPage } from '../features/expenses/ExpensesPage'
+import { CategoriesPage } from '../features/categories/CategoriesPage'
 import { AppShell } from './layout/AppShell'
 import { HomePage } from '../features/home/HomePage'
 import { BudgetsPage } from '../features/budgets/BudgetsPage'
@@ -15,6 +18,7 @@ const UiKitPage = import.meta.env.DEV
 export function App() {
   return (
     <PrefsProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
@@ -22,6 +26,8 @@ export function App() {
             <Route path="budgets" element={<BudgetsPage />} />
             <Route path="stats" element={<StatsPage />} />
             <Route path="more" element={<MorePage />} />
+            <Route path="expenses" element={<ExpensesPage />} />
+            <Route path="categories" element={<CategoriesPage />} />
             {UiKitPage && (
               <Route
                 path="ui"
@@ -35,6 +41,7 @@ export function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </PrefsProvider>
   )
 }

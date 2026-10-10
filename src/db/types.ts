@@ -12,6 +12,8 @@ export interface Category {
   icon: string
   color: string
   order: number
+  /** Masquée : absente du choix à l'ajout, mais ses dépenses restent visibles. */
+  hidden?: boolean
 }
 
 export interface Expense {
@@ -22,6 +24,8 @@ export interface Expense {
   note?: string
   recurringId?: number
   createdAt: number
+  /** Donnée de démonstration : seule celle-ci est effacée par « Effacer la démo ». */
+  demo?: boolean
 }
 
 /**
@@ -38,6 +42,7 @@ export interface Budget {
 export interface MonthlyIncome {
   month: string
   incomeCents: number
+  demo?: boolean
 }
 
 export interface Recurring {

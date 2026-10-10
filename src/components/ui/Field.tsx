@@ -1,7 +1,8 @@
-import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from 'react'
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
+  inputRef?: Ref<HTMLInputElement>
   hint?: string
   error?: string
   /** Texte collé à la fin du champ (ex. « MAD »). */
@@ -16,6 +17,7 @@ export function Field({
   error,
   suffix,
   amount,
+  inputRef,
   className = '',
   id,
   ...rest
@@ -36,6 +38,7 @@ export function Field({
       >
         <input
           id={inputId}
+          ref={inputRef}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={`w-full min-w-0 bg-transparent py-3 outline-none placeholder:text-muted/60 ${

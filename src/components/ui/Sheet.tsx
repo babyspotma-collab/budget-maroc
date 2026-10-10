@@ -31,7 +31,7 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
         if (e.target === ref.current) onClose()
       }}
       aria-label={title}
-      className="sheet m-0 mx-auto mt-auto w-full max-w-md rounded-t-3xl bg-cream p-0 text-ink shadow-2xl"
+      className="sheet m-0 mx-auto mt-auto max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-cream p-0 text-ink shadow-2xl"
     >
       <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-3">
         <div aria-hidden className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-sand-strong" />

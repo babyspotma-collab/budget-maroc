@@ -1,7 +1,14 @@
 {
   "app": { "name": "Budget Maroc" },
-  "common": { "close": "Fermer" },
-  "add": { "title": "Nouvelle dépense", "soon": "Le formulaire d'ajout rapide arrive à l'étape 2." },
+  "common": {
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "undo": "Annuler",
+    "seeAll": "Voir tout"
+  },
   "nav": {
     "label": "Navigation principale",
     "home": "Accueil",
@@ -12,20 +19,84 @@
   },
   "home": {
     "title": "Ce mois-ci",
-    "placeholder": "Votre tableau de bord apparaîtra ici.",
-    "categoriesLoaded": "{{count}} catégories prêtes"
+    "remaining": "Reste à vivre",
+    "overspent": "Dépassement du revenu",
+    "spent": "Dépensé ce mois",
+    "income": "Revenu du mois",
+    "setIncome": "Définir mon revenu",
+    "noIncomeHint": "Indiquez votre revenu du mois pour voir ce qu'il vous reste.",
+    "usedPct": "{{pct}} % du revenu dépensé",
+    "recent": "Dernières dépenses",
+    "emptyTitle": "Votre mois est encore vierge",
+    "emptyBody": "Ajoutez votre première dépense en deux touches : le montant, puis la catégorie.",
+    "emptyCta": "Ajouter une dépense",
+    "emptyDemo": "Essayer avec des données de démo"
+  },
+  "add": {
+    "title": "Nouvelle dépense",
+    "editTitle": "Modifier la dépense",
+    "amount": "Montant",
+    "pick": "Touchez une catégorie pour enregistrer",
+    "pickEdit": "Catégorie",
+    "date": "Date",
+    "note": "Note",
+    "notePlaceholder": "Facultatif",
+    "more": "Ajouter une date ou une note",
+    "errorAmount": "Saisissez un montant supérieur à 0.",
+    "saved": "Dépense ajoutée",
+    "updated": "Dépense modifiée",
+    "deleted": "Dépense supprimée"
+  },
+  "expenses": {
+    "title": "Dépenses",
+    "monthTotal": "Total",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "prev": "Mois précédent",
+    "next": "Mois suivant",
+    "emptyTitle": "Aucune dépense en {{month}}",
+    "emptyBody": "Les dépenses que vous ajoutez apparaissent ici, jour par jour."
+  },
+  "income": {
+    "title": "Revenu du mois",
+    "label": "Revenu net du mois",
+    "hint": "Laissez vide pour retirer le revenu.",
+    "error": "Saisissez un montant valide.",
+    "saved": "Revenu enregistré"
   },
   "budgets": { "title": "Budgets", "placeholder": "Les budgets par catégorie arrivent à l'étape 3." },
   "stats": { "title": "Statistiques", "placeholder": "Camembert et courbe du mois arrivent à l'étape 4." },
   "more": {
     "title": "Plus",
+    "expensesLink": "Dépenses du mois",
+    "categoriesLink": "Catégories",
     "language": "Langue",
     "numerals": "Chiffres",
     "numeralsLatn": "Latins (0-9)",
     "numeralsArab": "Arabes-indiens (٠-٩)",
-    "preview": "Aperçu du format"
+    "preview": "Aperçu du format",
+    "dataTitle": "Données de démonstration",
+    "demoHint": "Les données de démo sont repérées : vos vraies dépenses ne sont jamais touchées.",
+    "loadDemo": "Charger 30 dépenses de démo",
+    "clearDemo": "Effacer les données de démo",
+    "demoLoaded": "{{count}} dépenses de démo ajoutées",
+    "demoCleared": "{{count}} éléments de démo effacés",
+    "demoNone": "Aucune donnée de démo à effacer"
   },
   "categories": {
+    "title": "Catégories",
+    "add": "Nouvelle catégorie",
+    "addShort": "Ajouter",
+    "edit": "Modifier la catégorie",
+    "name": "Nom",
+    "icon": "Icône",
+    "color": "Couleur",
+    "hide": "Masquer",
+    "show": "Afficher",
+    "hidden": "Catégories masquées",
+    "hiddenHint": "Une catégorie masquée n'apparaît plus à l'ajout, mais ses dépenses restent visibles.",
+    "saved": "Catégorie enregistrée",
+    "nameRequired": "Donnez un nom à la catégorie.",
     "groceries": "Courses",
     "transport": "Transport",
     "rent": "Loyer",
@@ -39,4 +110,3 @@
     "other": "Autres"
   }
 }
-

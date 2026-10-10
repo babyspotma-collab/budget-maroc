@@ -1,5 +1,6 @@
 export { Button } from './Button'
 export { Card } from './Card'
+export { EmptyState } from './EmptyState'
 export { Fab } from './Fab'
 export { Field } from './Field'
 export { PageHeader } from './PageHeader'

@@ -55,9 +55,12 @@ body {
   overscroll-behavior-y: none;
 }
 
-:focus-visible {
-  outline: 3px solid var(--color-majorelle-600);
-  outline-offset: 2px;
+/* Dans @layer base pour que les utilitaires (ex. outline-none des champs) l'emportent. */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-majorelle-600);
+    outline-offset: 2px;
+  }
 }
 
 /* Étoile à 8 branches, en filigrane discret derrière les en-têtes */
@@ -66,6 +69,18 @@ body {
   background-size: 56px 56px;
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+}
+
+/* Variante claire, pour les surfaces terracotta */
+.zellige-light {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23fbf6ee' stroke-opacity='.12' stroke-width='1.2'%3E%3Crect x='12' y='12' width='32' height='32'/%3E%3Crect x='12' y='12' width='32' height='32' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 56px 56px;
+  -webkit-mask-image: linear-gradient(to bottom left, #000 0%, transparent 70%);
+  mask-image: linear-gradient(to bottom left, #000 0%, transparent 70%);
+}
+[dir='rtl'] .zellige-light {
+  -webkit-mask-image: linear-gradient(to bottom right, #000 0%, transparent 70%);
+  mask-image: linear-gradient(to bottom right, #000 0%, transparent 70%);
 }
 
 /* Les icônes directionnelles se retournent en RTL */

@@ -1,11 +1,27 @@
 export type Lang = 'fr' | 'ar'
 export type Numerals = 'latn' | 'arab'
 
-/** Montant saisi en MAD (ex. "12,5" ou "12.50") → centimes. NaN si invalide. */
+const ARABIC_INDIC = '٠١٢٣٤٥٦٧٨٩'
+
+/**
+ * Montant saisi en MAD (ex. "12,5", "12.50", "١٢٫٥") → centimes. NaN si invalide.
+ * Accepte les chiffres arabes-indiens et les séparateurs décimaux arabes.
+ */
 export function parseMAD(input: string): number {
-  const normalized = input.replace(/\s/g, '').replace(',', '.')
+  const normalized = input
+    .replace(/[٠-٩]/g, (d) => String(ARABIC_INDIC.indexOf(d)))
+    .replace(/[\s  ]/g, '')
+    .replace(/[,٫،]/, '.')
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return NaN
   return Math.round(Number(normalized) * 100)
+}
+
+/** Centimes → texte éditable ("1250" → "12,5"; "1200" → "12"). */
+export function centsToInput(cents: number): string {
+  const whole = Math.floor(cents / 100)
+  const frac = cents % 100
+  if (frac === 0) return String(whole)
+  return `${whole},${String(frac).padStart(2, '0').replace(/0$/, '')}`
 }
 
 export function centsToMAD(cents: number): number {

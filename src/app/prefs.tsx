@@ -24,10 +24,14 @@ interface Prefs {
   lang: Lang
   dir: 'ltr' | 'rtl'
   numerals: Numerals
+  /** Locale Intl complète, ex. « fr-FR-u-nu-latn ». */
+  locale: string
   setLang: (lang: Lang) => void
   setNumerals: (n: Numerals) => void
   /** Formate des centimes en MAD selon la langue et le système de chiffres. */
   money: (cents: number) => string
+  /** Formate un entier avec le système de chiffres choisi. */
+  num: (n: number) => string
 }
 
 const PrefsContext = createContext<Prefs | null>(null)
@@ -63,9 +67,12 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       lang,
       dir,
       numerals,
+      locale: `${lang === 'ar' ? 'ar-MA' : 'fr-FR'}-u-nu-${numerals}`,
       setLang,
       setNumerals,
       money: (cents) => formatMAD(cents, { lang, numerals }),
+      num: (n) =>
+        new Intl.NumberFormat(`${lang === 'ar' ? 'ar-MA' : 'fr-FR'}-u-nu-${numerals}`).format(n),
     }),
     [lang, dir, numerals, setLang, setNumerals],
   )

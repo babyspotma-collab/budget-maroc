@@ -1,45 +1,47 @@
 @import 'tailwindcss';
 
-/* Direction « Zellige » : crème, terracotta, bleu majorelle */
+/* Direction « Enveloppes » : fond gris-lavande, cartes blanches, accents violet et bleu */
 @theme {
-  --font-sans: 'Readex Pro Variable', system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', 'Readex Pro Variable', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans Variable', 'Readex Pro Variable', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans Variable', 'Readex Pro Variable', system-ui, sans-serif;
 
-  --color-cream: #fbf6ee;
-  --color-surface: #fffdf8;
-  --color-sand: #e8dcc8;
-  --color-sand-strong: #d6c5a6;
+  --color-canvas: #f4f5fa;
+  --color-surface: #ffffff;
+  --color-line: #e6e8f0;
+  --color-line-strong: #d3d7e4;
 
-  --color-ink: #2a2118;
-  --color-muted: #75664f;
+  --color-ink: #1e1b3a;
+  --color-muted: #6b6f8a;
 
-  --color-terracotta-50: #fbebe4;
-  --color-terracotta-500: #c2512f;
-  --color-terracotta-600: #a94325;
-  --color-terracotta-700: #8c361d;
+  --color-brand-50: #f1ecff;
+  --color-brand-500: #7048e8;
+  --color-brand-600: #5f3bd3;
+  --color-brand-700: #4d2fb3;
 
-  --color-majorelle-50: #e8ebf8;
-  --color-majorelle-600: #2b3fa0;
-  --color-majorelle-700: #22338a;
+  --color-accent-50: #e7f0ff;
+  --color-accent-500: #2f7df6;
+  --color-accent-600: #1f6ae8;
+  --color-accent-700: #1a56c4;
 
-  --color-mint-50: #e3f3ec;
-  --color-mint-600: #2f8f6b;
+  --color-mint-50: #e3f7ee;
+  --color-mint-600: #1f9d6b;
 
-  --color-saffron-50: #fcf1dc;
-  --color-saffron-500: #e9a23b;
+  --color-saffron-50: #fff4d6;
+  --color-saffron-500: #f5b82e;
   --color-saffron-700: #9a6212;
 
-  --color-danger-50: #fde8e6;
-  --color-danger-600: #b3261e;
+  --color-danger-50: #ffe8ea;
+  --color-danger-600: #d92d3f;
 
-  --radius-card: 1rem;
-  --shadow-card: 0 1px 0 rgb(232 220 200 / 0.9), 0 6px 16px -10px rgb(42 33 24 / 0.25);
-  --shadow-fab: 0 10px 20px -8px rgb(43 63 160 / 0.55);
+  --radius-card: 1.5rem;
+  --shadow-card: 0 10px 28px -16px rgb(30 27 58 / 0.22);
+  --shadow-fab: 0 12px 24px -8px rgb(47 125 246 / 0.55);
 }
 
-/* En arabe, Fraunces n'a pas de glyphes : on garde une seule famille. */
+/* En arabe, Readex Pro passe devant pour des glyphes arabes cohérents. */
 :root[lang='ar'] {
-  --font-display: 'Readex Pro Variable', system-ui, sans-serif;
+  --font-sans: 'Readex Pro Variable', 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+  --font-display: 'Readex Pro Variable', 'Plus Jakarta Sans Variable', system-ui, sans-serif;
 }
 
 html,
@@ -49,7 +51,7 @@ body,
 }
 
 body {
-  @apply bg-cream text-ink antialiased;
+  @apply bg-canvas text-ink antialiased;
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
@@ -58,29 +60,9 @@ body {
 /* Dans @layer base pour que les utilitaires (ex. outline-none des champs) l'emportent. */
 @layer base {
   :focus-visible {
-    outline: 3px solid var(--color-majorelle-600);
+    outline: 3px solid var(--color-accent-600);
     outline-offset: 2px;
   }
-}
-
-/* Étoile à 8 branches, en filigrane discret derrière les en-têtes */
-.zellige {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23c2512f' stroke-opacity='.16' stroke-width='1.2'%3E%3Crect x='12' y='12' width='32' height='32'/%3E%3Crect x='12' y='12' width='32' height='32' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 56px 56px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
-}
-
-/* Variante claire, pour les surfaces terracotta */
-.zellige-light {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23fbf6ee' stroke-opacity='.12' stroke-width='1.2'%3E%3Crect x='12' y='12' width='32' height='32'/%3E%3Crect x='12' y='12' width='32' height='32' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 56px 56px;
-  -webkit-mask-image: linear-gradient(to bottom left, #000 0%, transparent 70%);
-  mask-image: linear-gradient(to bottom left, #000 0%, transparent 70%);
-}
-[dir='rtl'] .zellige-light {
-  -webkit-mask-image: linear-gradient(to bottom right, #000 0%, transparent 70%);
-  mask-image: linear-gradient(to bottom right, #000 0%, transparent 70%);
 }
 
 /* Les icônes directionnelles se retournent en RTL */
@@ -93,7 +75,7 @@ dialog.sheet {
   animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 dialog.sheet::backdrop {
-  background: rgb(42 33 24 / 0.45);
+  background: rgb(30 27 58 / 0.45);
   animation: fade-in 200ms ease-out;
 }
 @keyframes sheet-in {

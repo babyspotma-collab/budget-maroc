@@ -88,7 +88,7 @@ export function CategorySheet({ open, onClose, category }: CategorySheetProps) {
                 aria-checked={icon === e}
                 onClick={() => setIcon(e)}
                 className={`flex aspect-square items-center justify-center rounded-xl text-xl ${
-                  icon === e ? 'bg-terracotta-50 ring-2 ring-terracotta-500' : 'bg-surface'
+                  icon === e ? 'bg-brand-50 ring-2 ring-brand-500' : 'bg-surface'
                 }`}
               >
                 {e}
@@ -109,7 +109,7 @@ export function CategorySheet({ open, onClose, category }: CategorySheetProps) {
                 aria-label={c}
                 onClick={() => setColor(c)}
                 className={`size-9 rounded-full ${
-                  color === c ? 'ring-2 ring-ink ring-offset-2 ring-offset-cream' : ''
+                  color === c ? 'ring-2 ring-ink ring-offset-2 ring-offset-canvas' : ''
                 }`}
                 style={{ backgroundColor: c }}
               />

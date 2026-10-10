@@ -8,6 +8,7 @@ import {
   sortExpenses,
   spentRatio,
   totalCents,
+  totalsByCategory,
 } from '../expenses'
 
 const exp = (id: number, date: string, amountCents: number, categoryId = 1, createdAt = id): Expense => ({
@@ -58,6 +59,16 @@ describe('expenses', () => {
     expect(remainingCents(750000, 237800)).toBe(512200)
     expect(remainingCents(100000, 150000)).toBe(-50000)
     expect(remainingCents(undefined, 1000)).toBeUndefined()
+  })
+
+  it('totalise par catégorie, du plus dépensé au moins dépensé', () => {
+    const rows = totalsByCategory([exp(1, '2026-10-01', 500, 2), exp(2, '2026-10-01', 300, 1), exp(3, '2026-10-02', 400, 2), exp(4, '2026-10-02', 100, 3)])
+    expect(rows).toEqual([
+      { categoryId: 2, totalCents: 900 },
+      { categoryId: 1, totalCents: 300 },
+      { categoryId: 3, totalCents: 100 },
+    ])
+    expect(totalsByCategory([])).toEqual([])
   })
 
   it('calcule la part du revenu dépensée', () => {

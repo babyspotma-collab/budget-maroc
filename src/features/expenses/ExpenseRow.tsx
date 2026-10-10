@@ -32,7 +32,7 @@ export function ExpenseRow({ expense, category, onClick, showDate }: ExpenseRowP
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors hover:bg-sand/40 active:bg-sand/60"
+      className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors hover:bg-line/40 active:bg-line/60"
     >
       <CategoryIcon category={category} />
       <span className="min-w-0 flex-1">

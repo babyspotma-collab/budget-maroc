@@ -33,7 +33,7 @@ export function CategoriesPage() {
           type="button"
           aria-label={`${t('common.edit')} ${label(c)}`}
           onClick={() => open(c)}
-          className="flex size-11 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-sand/50"
+          className="flex size-11 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-line/50"
         >
           <PencilIcon />
         </button>
@@ -41,7 +41,7 @@ export function CategoriesPage() {
           type="button"
           aria-label={`${c.hidden ? t('categories.show') : t('categories.hide')} ${label(c)}`}
           onClick={() => void setCategoryHidden(c.id!, !c.hidden)}
-          className="flex size-11 shrink-0 items-center justify-center rounded-xl text-majorelle-600 hover:bg-majorelle-50"
+          className="flex size-11 shrink-0 items-center justify-center rounded-xl text-accent-600 hover:bg-accent-50"
         >
           {c.hidden ? <EyeIcon /> : <EyeOffIcon />}
         </button>
@@ -58,7 +58,7 @@ export function CategoriesPage() {
 
       <div className="space-y-5">
         <Card className="p-1.5">
-          <ul className="divide-y divide-sand/70">{visible.map(row)}</ul>
+          <ul className="divide-y divide-line/70">{visible.map(row)}</ul>
         </Card>
 
         {hidden.length > 0 && (
@@ -66,7 +66,7 @@ export function CategoriesPage() {
             <h2 className="px-1 text-sm font-semibold text-muted">{t('categories.hidden')}</h2>
             <p className="mb-2 px-1 text-xs text-muted">{t('categories.hiddenHint')}</p>
             <Card className="p-1.5 opacity-80">
-              <ul className="divide-y divide-sand/70">{hidden.map(row)}</ul>
+              <ul className="divide-y divide-line/70">{hidden.map(row)}</ul>
             </Card>
           </section>
         )}

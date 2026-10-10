@@ -36,6 +36,20 @@ export function recentExpenses(list: Expense[], n: number): Expense[] {
   return sortExpenses(list).slice(0, n)
 }
 
+export interface CategoryTotal {
+  categoryId: number
+  totalCents: number
+}
+
+/** Total par catégorie, du plus dépensé au moins dépensé. */
+export function totalsByCategory(list: Expense[]): CategoryTotal[] {
+  const sums = new Map<number, number>()
+  for (const e of list) sums.set(e.categoryId, (sums.get(e.categoryId) ?? 0) + e.amountCents)
+  return [...sums.entries()]
+    .map(([categoryId, totalCents]) => ({ categoryId, totalCents }))
+    .sort((a, b) => b.totalCents - a.totalCents || a.categoryId - b.categoryId)
+}
+
 /** Reste à vivre = revenu − dépenses. `undefined` si aucun revenu n'est défini. */
 export function remainingCents(incomeCents: number | undefined, spentCents: number) {
   return incomeCents === undefined ? undefined : incomeCents - spentCents

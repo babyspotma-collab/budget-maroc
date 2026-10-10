@@ -22,7 +22,7 @@ function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="flex rounded-xl border border-sand-strong bg-surface p-1"
+      className="flex rounded-xl border border-line-strong bg-surface p-1"
     >
       {options.map((o) => (
         <button
@@ -32,7 +32,7 @@ function Segmented<T extends string>({
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={`min-h-10 flex-1 rounded-lg px-3 text-sm font-medium transition-colors ${
-            value === o.value ? 'bg-terracotta-500 text-white' : 'text-ink hover:bg-sand/50'
+            value === o.value ? 'bg-brand-500 text-white' : 'text-ink hover:bg-line/50'
           }`}
         >
           {o.label}
@@ -46,7 +46,7 @@ function MenuLink({ to, children }: { to: string; children: string }) {
   return (
     <Link
       to={to}
-      className="flex min-h-14 items-center justify-between px-3 font-medium hover:bg-sand/40"
+      className="flex min-h-14 items-center justify-between px-3 font-medium hover:bg-line/40"
     >
       {children}
       <ChevronRightIcon className="rtl-flip text-muted" />
@@ -63,7 +63,7 @@ export function MorePage() {
     <>
       <PageHeader title={t('more.title')} />
       <div className="space-y-6">
-        <Card className="divide-y divide-sand/70 overflow-hidden p-0">
+        <Card className="divide-y divide-line/70 overflow-hidden p-0">
           <MenuLink to="/expenses">{t('more.expensesLink')}</MenuLink>
           <MenuLink to="/categories">{t('more.categoriesLink')}</MenuLink>
         </Card>
@@ -127,7 +127,7 @@ export function MorePage() {
         </section>
 
         {import.meta.env.DEV && (
-          <Link to="/ui" className="block text-sm font-medium text-majorelle-600 underline">
+          <Link to="/ui" className="block text-sm font-medium text-accent-600 underline">
             Kit UI (dev)
           </Link>
         )}

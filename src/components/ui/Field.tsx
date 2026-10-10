@@ -32,8 +32,8 @@ export function Field({
         {label}
       </label>
       <div
-        className={`flex items-center rounded-xl border bg-surface px-4 transition-colors focus-within:border-majorelle-600 focus-within:ring-2 focus-within:ring-majorelle-600/25 ${
-          error ? 'border-danger-600' : 'border-sand-strong'
+        className={`flex items-center rounded-xl border bg-surface px-4 transition-colors focus-within:border-accent-600 focus-within:ring-2 focus-within:ring-accent-600/25 ${
+          error ? 'border-danger-600' : 'border-line-strong'
         }`}
       >
         <input

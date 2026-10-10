@@ -19,6 +19,11 @@
   },
   "home": {
     "title": "Ce mois-ci",
+    "greeting": "Bonjour",
+    "ringTitle": "Reste à vivre ce mois-ci",
+    "byCategory": "Par catégorie",
+    "spentShort": "Dépensé",
+    "noExpensesMonth": "Aucune dépense ce mois-ci.",
     "remaining": "Reste à vivre",
     "overspent": "Dépassement du revenu",
     "spent": "Dépensé ce mois",

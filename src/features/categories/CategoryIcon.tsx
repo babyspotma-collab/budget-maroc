@@ -1,9 +1,9 @@
 import type { Category } from '../../db/types'
 
 const SIZES = {
-  sm: 'size-9 text-lg rounded-xl',
-  md: 'size-11 text-xl rounded-2xl',
-  lg: 'size-14 text-3xl rounded-2xl',
+  sm: 'size-9 text-lg',
+  md: 'size-11 text-xl',
+  lg: 'size-14 text-3xl',
 } as const
 
 interface CategoryIconProps {
@@ -11,14 +11,17 @@ interface CategoryIconProps {
   size?: keyof typeof SIZES
 }
 
-/** Pastille teintée à la couleur de la catégorie. */
+/** Pastille ronde : fond blanc cerclé de la couleur de la catégorie, teinte douce. */
 export function CategoryIcon({ category, size = 'md' }: CategoryIconProps) {
   const color = category?.color ?? '#64748b'
   return (
     <span
       aria-hidden
-      className={`flex shrink-0 items-center justify-center ${SIZES[size]}`}
-      style={{ backgroundColor: `${color}26`, boxShadow: `inset 0 0 0 1.5px ${color}55` }}
+      className={`flex shrink-0 items-center justify-center rounded-full ${SIZES[size]}`}
+      style={{
+        backgroundColor: `color-mix(in srgb, ${color} 16%, white)`,
+        boxShadow: `inset 0 0 0 2px color-mix(in srgb, ${color} 55%, white)`,
+      }}
     >
       {category?.icon ?? '📦'}
     </span>

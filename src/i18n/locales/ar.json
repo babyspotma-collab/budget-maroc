@@ -19,6 +19,11 @@
   },
   "home": {
     "title": "هذا الشهر",
+    "greeting": "مرحباً",
+    "ringTitle": "المتبقي لك هذا الشهر",
+    "byCategory": "حسب الفئة",
+    "spentShort": "المصروف",
+    "noExpensesMonth": "لا مصاريف هذا الشهر.",
     "remaining": "المتبقي لك",
     "overspent": "تجاوزٌ للدخل",
     "spent": "المصروف هذا الشهر",

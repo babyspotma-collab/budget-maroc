@@ -153,8 +153,8 @@ export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
                   aria-pressed={editing ? selected : undefined}
                   className={`flex min-h-[4.75rem] flex-col items-center justify-center gap-1 rounded-2xl border px-1 py-2 text-[11px] leading-tight transition-colors active:scale-95 ${
                     selected
-                      ? 'border-terracotta-500 bg-terracotta-50 font-semibold'
-                      : 'border-sand bg-surface hover:border-sand-strong'
+                      ? 'border-brand-500 bg-brand-50 font-semibold'
+                      : 'border-line bg-surface hover:border-line-strong'
                   }`}
                 >
                   <CategoryIcon category={c} size="sm" />
@@ -185,7 +185,7 @@ export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
           <button
             type="button"
             onClick={() => setMore(true)}
-            className="text-sm font-medium text-majorelle-600 underline underline-offset-2"
+            className="text-sm font-medium text-accent-600 underline underline-offset-2"
           >
             {t('add.more')}
           </button>

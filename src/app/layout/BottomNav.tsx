@@ -1,14 +1,11 @@
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Fab } from '../../components/ui'
 import { ChartIcon, HomeIcon, MenuIcon, TargetIcon } from '../../components/ui/icons'
 
-const LEFT = [
+const TABS = [
   { to: '/', key: 'home', icon: <HomeIcon />, end: true },
   { to: '/budgets', key: 'budgets', icon: <TargetIcon />, end: false },
-] as const
-const RIGHT = [
   { to: '/stats', key: 'stats', icon: <ChartIcon />, end: false },
   { to: '/more', key: 'more', icon: <MenuIcon />, end: false },
 ] as const
@@ -29,42 +26,26 @@ function Tab({
       to={to}
       end={end}
       className={({ isActive }) =>
-        `relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] ${
-          isActive ? 'font-semibold text-terracotta-600' : 'text-muted'
+        `flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium ${
+          isActive ? 'text-brand-500' : 'text-muted'
         }`
       }
     >
-      {({ isActive }) => (
-        <>
-          {isActive && (
-            <span
-              aria-hidden
-              className="absolute top-0 h-0.5 w-8 rounded-b-full bg-terracotta-500"
-            />
-          )}
-          {icon}
-          {label}
-        </>
-      )}
+      {icon}
+      {label}
     </NavLink>
   )
 }
 
-export function BottomNav({ onAdd }: { onAdd: () => void }) {
+export function BottomNav() {
   const { t } = useTranslation()
   return (
     <nav
       aria-label={t('nav.label')}
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-sand bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-20 rounded-t-3xl bg-surface pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_rgb(30_27_58/0.18)]"
     >
-      <div className="mx-auto grid max-w-md grid-cols-5 items-center">
-        {LEFT.map((i) => (
-          <Tab key={i.to} to={i.to} label={t(`nav.${i.key}`)} icon={i.icon} end={i.end} />
-        ))}
-        <div className="flex justify-center">
-          <Fab onClick={onAdd} aria-label={t('nav.add')} className="-mt-7" />
-        </div>
-        {RIGHT.map((i) => (
+      <div className="mx-auto grid max-w-md grid-cols-4">
+        {TABS.map((i) => (
           <Tab key={i.to} to={i.to} label={t(`nav.${i.key}`)} icon={i.icon} end={i.end} />
         ))}
       </div>

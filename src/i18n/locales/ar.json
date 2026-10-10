@@ -1,0 +1,38 @@
+{
+  "app": { "name": "ميزانية المغرب" },
+  "nav": {
+    "home": "الرئيسية",
+    "budgets": "الميزانيات",
+    "stats": "إحصائيات",
+    "more": "المزيد",
+    "add": "إضافة مصروف"
+  },
+  "home": {
+    "title": "هذا الشهر",
+    "placeholder": "ستظهر لوحة المتابعة هنا.",
+    "categoriesLoaded": "{{count}} فئة جاهزة"
+  },
+  "budgets": { "title": "الميزانيات", "placeholder": "ميزانيات الفئات ستتوفر في المرحلة 3." },
+  "stats": { "title": "الإحصائيات", "placeholder": "الرسوم البيانية ستتوفر في المرحلة 4." },
+  "more": {
+    "title": "المزيد",
+    "language": "اللغة",
+    "numerals": "الأرقام",
+    "numeralsLatn": "لاتينية (0-9)",
+    "numeralsArab": "عربية هندية (٠-٩)",
+    "preview": "معاينة التنسيق"
+  },
+  "categories": {
+    "groceries": "المشتريات",
+    "transport": "النقل",
+    "rent": "الكراء",
+    "phone": "الهاتف",
+    "outings": "الخرجات",
+    "utilities": "الماء والكهرباء",
+    "health": "الصحة",
+    "education": "التعليم",
+    "clothing": "الملابس",
+    "family": "العائلة",
+    "other": "أخرى"
+  }
+}

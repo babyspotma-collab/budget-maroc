@@ -1,0 +1,38 @@
+{
+  "app": { "name": "Budget Maroc" },
+  "nav": {
+    "home": "Accueil",
+    "budgets": "Budgets",
+    "stats": "Stats",
+    "more": "Plus",
+    "add": "Ajouter une dépense"
+  },
+  "home": {
+    "title": "Ce mois-ci",
+    "placeholder": "Votre tableau de bord apparaîtra ici.",
+    "categoriesLoaded": "{{count}} catégories prêtes"
+  },
+  "budgets": { "title": "Budgets", "placeholder": "Les budgets par catégorie arrivent à l'étape 3." },
+  "stats": { "title": "Statistiques", "placeholder": "Camembert et courbe du mois arrivent à l'étape 4." },
+  "more": {
+    "title": "Plus",
+    "language": "Langue",
+    "numerals": "Chiffres",
+    "numeralsLatn": "Latins (0-9)",
+    "numeralsArab": "Arabes-indiens (٠-٩)",
+    "preview": "Aperçu du format"
+  },
+  "categories": {
+    "groceries": "Courses",
+    "transport": "Transport",
+    "rent": "Loyer",
+    "phone": "Téléphone",
+    "outings": "Sorties",
+    "utilities": "Eau et électricité",
+    "health": "Santé",
+    "education": "Éducation",
+    "clothing": "Vêtements",
+    "family": "Famille",
+    "other": "Autres"
+  }
+}

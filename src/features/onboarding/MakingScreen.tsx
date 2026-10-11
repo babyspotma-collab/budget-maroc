@@ -38,11 +38,11 @@ export function MakingScreen({ name, work, onDone }: MakingScreenProps) {
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-8 text-center">
       <div className="relative mb-10 flex size-36 items-center justify-center">
         <svg viewBox="0 0 64 64" className="making-spin absolute inset-0 size-full" aria-hidden>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="#e1d8ff" strokeWidth="6" />
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#cbe6da" strokeWidth="6" />
           <path
             d="M32 4a28 28 0 0 1 26.6 19.3"
             fill="none"
-            stroke="#7048e8"
+            stroke="#0c7d5e"
             strokeWidth="6"
             strokeLinecap="round"
           />

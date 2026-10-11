@@ -1,9 +1,9 @@
-// Génère les icônes PNG de la PWA sans dépendance (pièce blanche sur fond violet).
+// Génère les icônes PNG de la PWA sans dépendance (pièce dorée sur fond émeraude).
 import { deflateSync } from 'node:zlib'
 import { writeFileSync, mkdirSync } from 'node:fs'
 
-const BRAND = [112, 72, 232]
-const LIGHT = [255, 255, 255]
+const BRAND = [12, 125, 94]
+const LIGHT = [233, 185, 73]
 
 const crcTable = Array.from({ length: 256 }, (_, n) => {
   let c = n

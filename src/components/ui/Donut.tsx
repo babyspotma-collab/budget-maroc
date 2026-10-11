@@ -32,7 +32,7 @@ export function Donut({ ratio, color, label, children, size = 208 }: DonutProps)
         className="rtl-flip -rotate-90"
         aria-hidden
       >
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e9ebf3" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#ece7d8" strokeWidth={stroke} />
         {clamped > 0 && (
           <circle
             cx={size / 2}

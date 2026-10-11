@@ -11,10 +11,10 @@ import {
 import { usePrefs } from '../../app/prefs'
 import type { CurvePoint } from '../../domain/stats'
 
-const CURRENT = '#2f7df6'
-const PREVIOUS = '#8b90a8'
-const GRID = '#e6e8f0'
-const AXIS = '#d3d7e4'
+const CURRENT = '#0c7d5e'
+const PREVIOUS = '#8a948d'
+const GRID = '#e6e1d2'
+const AXIS = '#cfc8b3'
 const SURFACE = '#ffffff'
 
 interface MonthCurveProps {
@@ -98,7 +98,7 @@ export function MonthCurve({
               tickFormatter={(d: number) => num(d)}
               tickLine={false}
               axisLine={{ stroke: AXIS }}
-              tick={{ fontSize: 11, fill: '#6b6f8a' }}
+              tick={{ fontSize: 11, fill: '#5b675f' }}
               interval={0}
             />
             <YAxis
@@ -107,7 +107,7 @@ export function MonthCurve({
               tickCount={4}
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 11, fill: '#6b6f8a' }}
+              tick={{ fontSize: 11, fill: '#5b675f' }}
               tickFormatter={(cents: number) => plain.format(Math.round(cents / 100))}
               domain={[0, 'auto']}
             />

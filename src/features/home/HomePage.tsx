@@ -28,9 +28,9 @@ import { IncomeSheet } from '../income/IncomeSheet'
 import { isOnboardingSkipped } from '../program/actions'
 import { useProfile, useProgram } from '../program/hooks'
 
-const RING_OK = '#2f7df6'
-const RING_WARN = '#f5b82e'
-const RING_OVER = '#d92d3f'
+const RING_OK = '#0c7d5e'
+const RING_WARN = '#e9b949'
+const RING_OVER = '#c2321f'
 
 export function HomePage() {
   const { t } = useTranslation()
@@ -187,7 +187,7 @@ export function HomePage() {
             <h2 className="text-sm font-bold">{t('home.ringTitle')}</h2>
             <Link
               to="/expenses"
-              className="inline-flex items-center gap-0.5 text-sm font-semibold text-brand-500"
+              className="inline-flex items-center gap-0.5 text-sm font-semibold text-brand-600"
             >
               {t('common.seeAll')}
               <ChevronRightIcon width={18} height={18} className="rtl-flip" />
@@ -224,7 +224,7 @@ export function HomePage() {
             <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-line pt-4">
               <div>
                 <dt className="flex items-center gap-2 text-xs font-medium text-muted">
-                  <span aria-hidden className="size-2 rounded-full bg-accent-600" />
+                  <span aria-hidden className="size-2 rounded-full bg-brand-500" />
                   {t('home.spent')}
                 </dt>
                 <dd className="mt-0.5 font-bold tabular-nums">{money(spent)}</dd>
@@ -256,7 +256,7 @@ export function HomePage() {
               <h2 className="text-sm font-bold">{t('home.byCategory')}</h2>
               <Link
                 to="/budgets"
-                className="inline-flex items-center gap-0.5 text-sm font-semibold text-brand-500"
+                className="inline-flex items-center gap-0.5 text-sm font-semibold text-brand-600"
               >
                 {t('nav.budgets')}
                 <ChevronRightIcon width={18} height={18} className="rtl-flip" />
@@ -279,7 +279,7 @@ export function HomePage() {
                       <CategoryIcon category={c} size="sm" />
                     </div>
                     <p className="mt-4 flex items-center gap-1.5 text-xs font-medium">
-                      <span aria-hidden className="size-1.5 rounded-full bg-accent-600" />
+                      <span aria-hidden className="size-1.5 rounded-full bg-brand-500" />
                       {row.limit ? t('home.budgetLabel') : t('home.spentShort')}
                     </p>
                     <p className="mt-0.5 text-sm font-bold tabular-nums">

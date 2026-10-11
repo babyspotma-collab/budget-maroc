@@ -20,18 +20,18 @@ export function nextCategoryOrder(categories: Category[]): number {
 }
 
 export const CATEGORY_COLORS = [
-  '#c2512f',
-  '#ea580c',
-  '#ca8a04',
-  '#16a34a',
-  '#0d9488',
-  '#0891b2',
-  '#2563eb',
-  '#2b3fa0',
-  '#7c3aed',
-  '#db2777',
-  '#dc2626',
-  '#64748b',
+  '#0c7d5e',
+  '#3c9d6f',
+  '#1f9e8f',
+  '#1aa5b8',
+  '#3b82c4',
+  '#5b6fd6',
+  '#7c6bc4',
+  '#d6578f',
+  '#d9534f',
+  '#e8833a',
+  '#d9a441',
+  '#7c8a84',
 ]
 
 export const CATEGORY_EMOJIS = [

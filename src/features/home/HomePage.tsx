@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { usePrefs } from '../../app/prefs'
 import { useQuickAdd } from '../../app/quickAdd'
@@ -25,6 +25,8 @@ import { ExpenseSheet } from '../expenses/ExpenseSheet'
 import { useExpenseCount, useMonthExpenses, useMonthIncome } from '../expenses/hooks'
 import { MonthSwitcher } from '../expenses/MonthSwitcher'
 import { IncomeSheet } from '../income/IncomeSheet'
+import { isOnboardingSkipped } from '../program/actions'
+import { useProfile, useProgram } from '../program/hooks'
 
 const RING_OK = '#2f7df6'
 const RING_WARN = '#f5b82e'
@@ -42,6 +44,8 @@ export function HomePage() {
   const monthExpenses = useMonthExpenses(month)
   const income = useMonthIncome(month)
   const count = useExpenseCount()
+  const stored = useProfile()
+  const program = useProgram()
 
   const [editing, setEditing] = useState<Expense | undefined>()
   const [incomeOpen, setIncomeOpen] = useState(false)
@@ -82,10 +86,43 @@ export function HomePage() {
       >
         👋
       </span>
-      <p className="text-lg font-bold">{t('home.greeting')}</p>
+      <p className="text-lg font-bold">
+        {stored ? t('home.greetingName', { name: stored.profile.firstName }) : t('home.greeting')}
+      </p>
     </div>
   )
 
+  // Premier lancement : on propose le questionnaire (sauf si l'utilisateur l'a reporté).
+  if (stored === null && !isOnboardingSkipped()) return <Navigate to="/onboarding" replace />
+
+  const programCta =
+    stored === null ? (
+      <Card tone="accent" className="mb-4">
+        <h2 className="font-bold">{t('onboarding.cta.title')}</h2>
+        <p className="mt-1 text-sm text-muted">{t('onboarding.cta.body')}</p>
+        <Link
+          to="/onboarding"
+          className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-brand-500 px-4 text-sm font-semibold text-white"
+        >
+          {t('onboarding.cta.button')}
+        </Link>
+      </Card>
+    ) : program ? (
+      <Link to="/programme" className="mb-4 block">
+        <Card className="flex items-center gap-3 py-3">
+          <span aria-hidden className="flex size-10 items-center justify-center rounded-full bg-brand-50 text-lg">
+            🎯
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-xs font-medium text-muted">{t('plan.dailyTitle')}</span>
+            <span className="block font-extrabold">
+              {money(program.plan.dailyCents)} {t('plan.dailyPer')}
+            </span>
+          </span>
+          <ChevronRightIcon className="rtl-flip text-muted" />
+        </Card>
+      </Link>
+    ) : null
   if (monthExpenses === undefined || income === undefined || count === undefined) {
     return header
   }
@@ -94,6 +131,7 @@ export function HomePage() {
     return (
       <>
         {header}
+        {programCta}
         <EmptyState title={t('home.emptyTitle')} body={t('home.emptyBody')}>
           <Button size="lg" block onClick={openAdd}>
             {t('home.emptyCta')}
@@ -124,6 +162,7 @@ export function HomePage() {
   return (
     <>
       {header}
+      {programCta}
       <MonthSwitcher month={month} onChange={setMonth} />
 
       <div className="space-y-6">

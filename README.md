@@ -26,6 +26,9 @@ L'application est servie sur http://localhost:5173.
 
 ## Fonctions
 
+- **Programme personnalisé** : questionnaire de 10 questions, puis budget par catégorie, budget du jour,
+  objectif d'épargne daté, 3 à 5 règles adaptées au profil et plan de la première semaine.
+  Le moteur de règles (src/domain/plan.ts) est pur et testé ; « Appliquer » crée les budgets.
 - **Ajout rapide en 2 clics** : « + », montant, puis un clic sur la catégorie. Annulation possible.
 - **Dépenses** groupées par jour, modification et suppression avec « Annuler ».
 - **Catégories** prédéfinies, personnalisables (nom, icône, couleur) et masquables.
@@ -50,8 +53,8 @@ src/
 ├─ app/          coque (navigation, bouton « + »), préférences langue/chiffres, messages
 ├─ components/ui composants de base (boutons, cartes, champs, feuille, anneau…)
 ├─ db/           schéma Dexie, types, catégories prédéfinies
-├─ domain/       logique métier pure et testée (montants, dates, budgets, stats, démo)
-├─ features/     écrans par domaine (expenses, categories, budgets, stats, income, demo, more)
+├─ domain/       logique métier pure et testée (montants, dates, budgets, stats, plan, démo)
+├─ features/     écrans par domaine (expenses, categories, budgets, stats, income, onboarding, program, demo, more)
 └─ i18n/         traductions fr.json / ar.json
 ```
 

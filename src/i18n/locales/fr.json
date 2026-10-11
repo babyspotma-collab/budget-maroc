@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Budget Maroc" },
+  "app": {
+    "name": "Budget Maroc"
+  },
   "common": {
     "close": "Fermer",
     "save": "Enregistrer",
@@ -20,6 +22,7 @@
   "home": {
     "title": "Ce mois-ci",
     "greeting": "Bonjour",
+    "greetingName": "Bonjour {{name}}",
     "ringTitle": "Reste à vivre ce mois-ci",
     "byCategory": "Par catégorie",
     "spentShort": "Dépensé",
@@ -128,7 +131,9 @@
     "clearDemo": "Effacer les données de démo",
     "demoLoaded": "{{count}} dépenses de démo ajoutées",
     "demoCleared": "{{count}} éléments de démo effacés",
-    "demoNone": "Aucune donnée de démo à effacer"
+    "demoNone": "Aucune donnée de démo à effacer",
+    "programLink": "Mon programme",
+    "redoProgram": "Refaire le questionnaire"
   },
   "categories": {
     "title": "Catégories",
@@ -155,5 +160,175 @@
     "clothing": "Vêtements",
     "family": "Famille",
     "other": "Autres"
+  },
+  "onboarding": {
+    "title": "Ton programme sur mesure",
+    "next": "Continuer",
+    "back": "Retour",
+    "later": "Plus tard",
+    "finish": "Créer mon programme",
+    "progress": "Question {{n}} sur {{total}}",
+    "q": {
+      "name": {
+        "title": "Comment t'appelles-tu ?",
+        "hint": "Pour personnaliser ton programme.",
+        "placeholder": "Ton prénom"
+      },
+      "situation": {
+        "title": "Quelle est ta situation ?",
+        "employee": "Salarié(e)",
+        "self_employed": "Indépendant(e)",
+        "merchant": "Commerçant(e)",
+        "student": "Étudiant(e)",
+        "unemployed": "Sans emploi"
+      },
+      "income": {
+        "title": "Quel est ton revenu mensuel net ?",
+        "hint": "Ce qui arrive vraiment dans ta poche chaque mois (en moyenne si ça varie).",
+        "label": "Revenu mensuel net"
+      },
+      "incomeKind": {
+        "title": "Ton revenu est-il régulier ?",
+        "regular": "Régulier",
+        "regularHint": "À peu près le même montant chaque mois",
+        "variable": "Variable",
+        "variableHint": "Il change beaucoup selon les mois"
+      },
+      "payDay": {
+        "title": "Quel jour reçois-tu ton argent ?",
+        "hint": "Le jour du mois où ton revenu arrive (le plus fréquent si ça varie)."
+      },
+      "charges": {
+        "title": "Quelles sont tes charges fixes ?",
+        "hint": "Montants par mois. Laisse vide ce qui ne te concerne pas.",
+        "rent": "Loyer",
+        "credit": "Crédit",
+        "school": "École ou études",
+        "bills": "Factures (eau, électricité, téléphone)",
+        "transport": "Transport"
+      },
+      "debts": {
+        "title": "Dettes et daret",
+        "hint": "Ce que tu rembourses et cotises chaque mois. Laisse vide si rien.",
+        "debtMonthly": "Remboursement de dettes par mois",
+        "debtTotal": "Total restant à rembourser (facultatif)",
+        "daret": "Cotisation de daret par mois"
+      },
+      "dependents": {
+        "title": "Combien de personnes sont à ta charge ?",
+        "hint": "Enfants, parents, conjoint(e)… sans te compter.",
+        "none": "Aucune",
+        "more": "5 ou plus"
+      },
+      "goal": {
+        "title": "Quel est ton objectif principal ?",
+        "finish_month": "Finir le mois sans stress",
+        "save": "Épargner",
+        "repay_debt": "Rembourser une dette",
+        "project": "Financer un projet",
+        "understand": "Comprendre mes dépenses"
+      },
+      "problem": {
+        "title": "Quel est ton plus gros problème ?",
+        "impulsive": "Je dépense sans réfléchir",
+        "month_end": "Les fins de mois sont difficiles",
+        "no_savings": "Je n'arrive pas à épargner",
+        "no_tracking": "Je ne suis pas mes dépenses"
+      }
+    },
+    "errors": {
+      "name": "Entre ton prénom.",
+      "choice": "Choisis une réponse pour continuer.",
+      "income": "Entre un montant supérieur à 0.",
+      "amount": "Un des montants est invalide."
+    },
+    "making": {
+      "title": "On prépare ton programme",
+      "m1": "Analyse de ta situation...",
+      "m2": "Calcul de tes charges et de ton reste à vivre...",
+      "m3": "Création du programme de {{name}}...",
+      "m4": "Réglage de ton budget journalier...",
+      "m5": "Préparation de ta première semaine..."
+    },
+    "cta": {
+      "title": "Crée ton programme personnalisé",
+      "body": "10 questions : budget par catégorie, budget du jour, règles et plan de la première semaine.",
+      "button": "Commencer"
+    }
+  },
+  "plan": {
+    "title": "Ton programme",
+    "hello": "Programme de {{name}}",
+    "dailyTitle": "Tu peux dépenser",
+    "dailyPer": "par jour",
+    "dailyHint": "pour tes dépenses variables : courses, sorties, transport…",
+    "weekly": "soit {{amount}} par semaine",
+    "nextPay": "Prochaine paie : {{date}}",
+    "variableNote": "Revenu variable : le programme se base sur {{percent}} % de ta moyenne.",
+    "deficitTitle": "Tes charges dépassent ton revenu",
+    "deficitBody": "Il manque {{gap}} par mois. Commence par réduire une charge ou augmenter tes revenus.",
+    "breakdownTitle": "Où va ton revenu",
+    "income": "Revenu retenu",
+    "fixed": "Charges fixes",
+    "obligations": "Dettes et daret",
+    "savings": "Épargne",
+    "spendable": "Dépenses variables",
+    "savingsTitle": "Ton objectif d'épargne",
+    "savingsPerMonth": "{{amount}} par mois",
+    "savingsKind": {
+      "emergency": "Matelas de sécurité de {{target}}",
+      "project": "Projet : {{target}} en 12 mois",
+      "buffer": "Réserve de {{target}}"
+    },
+    "savingsDate": "Atteint en {{date}} ({{months}} mois)",
+    "savingsNone": "Pas d'épargne possible pour l'instant : commence par rééquilibrer tes charges.",
+    "debtTitle": "Ta sortie de dette",
+    "debtLine": "{{monthly}} par mois, dette soldée en {{date}}",
+    "debtLineNoDate": "{{monthly}} par mois",
+    "budgetsTitle": "Tes budgets du mois",
+    "rulesTitle": "Tes règles",
+    "weekTitle": "Ta première semaine",
+    "day": "Jour {{n}}",
+    "apply": "Appliquer mon programme",
+    "applied": "Programme appliqué",
+    "appliedBody": "Tes budgets sont créés à partir de {{month}}.",
+    "appliedToast": "{{count}} budgets créés",
+    "redo": "Refaire le questionnaire",
+    "notFound": "Tu n'as pas encore de programme.",
+    "create": "Créer mon programme",
+    "rules": {
+      "deficit": "Tes charges dépassent ton revenu de {{gap}} par mois ({{fixedPct}} % du revenu). Avant d'épargner : réduis une charge ou augmente tes revenus.",
+      "daily_cap": "{{daily}} par jour au maximum pour tes dépenses variables, pas un dirham de plus.",
+      "variable_floor": "Ton revenu varie : planifie sur {{planning}} ({{percent}} % de ta moyenne). Le surplus des bons mois va directement dans l’épargne.",
+      "weekly_envelope": "Mets de côté {{weekly}} chaque semaine pour tes dépenses variables, et fais-les durer 7 jours.",
+      "debt_first": "Priorité à la dette : {{extra}} en plus chaque mois, soit {{monthly}} par mois au total.",
+      "debt_minimum": "Ne saute jamais l'échéance de {{monthly}} : c'est ta première dépense du mois.",
+      "fixed_charges_high": "Tes charges fixes pèsent {{fixedPct}} % de ton revenu. Cherche une économie (loyer, forfait, crédit) avant de réduire les courses.",
+      "impulse_24h": "Règle des 24 h : tout achat imprévu de plus de {{threshold}} attend 24 heures.",
+      "month_end_half": "Ne dépense pas plus de {{half}} avant le {{day}} du mois, pour ne pas manquer en fin de mois.",
+      "no_savings_auto": "Épargne d'abord : le {{day}} du mois, dès la paie, mets {{savings}} de côté avant toute dépense.",
+      "pay_day_savings": "Le {{day}}, jour de paie, mets {{savings}} de côté avant de dépenser.",
+      "daret_keep": "Garde ton daret ({{monthly}} par mois) : c’est de l’épargne forcée. Ne le compte pas deux fois dans ton budget.",
+      "savings_goal": "À {{monthly}} par mois, tu atteins {{target}} en {{months}} mois.",
+      "dependents_buffer": "Avec {{count}} personnes à charge, garde une enveloppe imprévus de {{buffer}} (santé et famille).",
+      "student_cap": "Sorties : {{weeklyOutings}} par semaine au maximum.",
+      "track_daily": "Note chaque dépense le jour même : deux touches suffisent.",
+      "weekly_review": "Chaque semaine, 5 minutes : compare tes dépenses au budget et ajuste."
+    },
+    "actions": {
+      "apply_budgets": "Applique ton programme (bouton plus haut) et vérifie tes budgets.",
+      "log_all": "Note toutes tes dépenses aujourd'hui, même les petites.",
+      "weekly_envelope": "Mets de côté l'enveloppe de la semaine : {{weekly}}.",
+      "no_spend_day": "Passe une journée sans achat non essentiel.",
+      "check_bills": "Passe en revue tes factures et abonnements : téléphone, internet, eau, électricité.",
+      "debt_plan": "Prépare l'échéance de {{monthly}} : mets l'argent de côté dès maintenant.",
+      "first_transfer": "Fais ton premier virement d'épargne : {{savings}}.",
+      "compare_prices": "Compare les prix pour tes courses (budget : {{groceries}}).",
+      "mid_check": "Fais le point : compare tes dépenses à {{daily}} par jour.",
+      "family_talk": "Parle du budget avec ta famille ({{count}} personnes concernées) pour que chacun joue le jeu.",
+      "student_meals": "Prépare tes repas pour 3 jours (budget courses : {{groceries}}).",
+      "plan_weekend": "Fixe ton budget sorties du week-end (mois : {{outings}}).",
+      "weekly_review": "Bilan de la semaine : dépensé contre budget, et ajuste si besoin."
+    }
   }
 }

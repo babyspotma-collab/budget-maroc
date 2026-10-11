@@ -4,6 +4,8 @@ import { PrefsProvider } from './prefs'
 import { ToastProvider } from './toast'
 import { ExpensesPage } from '../features/expenses/ExpensesPage'
 import { CategoriesPage } from '../features/categories/CategoriesPage'
+import { OnboardingPage } from '../features/onboarding/OnboardingPage'
+import { ProgramPage } from '../features/program/ProgramPage'
 import { AppShell } from './layout/AppShell'
 import { HomePage } from '../features/home/HomePage'
 import { BudgetsPage } from '../features/budgets/BudgetsPage'
@@ -21,6 +23,7 @@ export function App() {
       <ToastProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
+          <Route path="onboarding" element={<OnboardingPage />} />
           <Route element={<AppShell />}>
             <Route index element={<HomePage />} />
             <Route path="budgets" element={<BudgetsPage />} />
@@ -28,6 +31,7 @@ export function App() {
             <Route path="more" element={<MorePage />} />
             <Route path="expenses" element={<ExpensesPage />} />
             <Route path="categories" element={<CategoriesPage />} />
+            <Route path="programme" element={<ProgramPage />} />
             {UiKitPage && (
               <Route
                 path="ui"

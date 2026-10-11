@@ -64,6 +64,8 @@ export function MorePage() {
       <PageHeader title={t('more.title')} />
       <div className="space-y-6">
         <Card className="divide-y divide-line/70 overflow-hidden p-0">
+          <MenuLink to="/programme">{t('more.programLink')}</MenuLink>
+          <MenuLink to="/onboarding">{t('more.redoProgram')}</MenuLink>
           <MenuLink to="/expenses">{t('more.expensesLink')}</MenuLink>
           <MenuLink to="/categories">{t('more.categoriesLink')}</MenuLink>
         </Card>

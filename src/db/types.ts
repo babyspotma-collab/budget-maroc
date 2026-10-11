@@ -1,3 +1,5 @@
+import type { Plan, Profile } from '../domain/plan'
+
 // Montants en centimes (entiers). Dates en 'YYYY-MM-DD', mois en 'YYYY-MM'.
 
 export type Frequency = 'weekly' | 'monthly' | 'yearly'
@@ -112,4 +114,22 @@ export interface DebtPayment {
   debtId: number
   amountCents: number
   date: string
+}
+
+/** Profil issu du questionnaire d'onboarding (une seule ligne, id = 1). */
+export interface StoredProfile {
+  id: 1
+  profile: Profile
+  updatedAt: number
+}
+
+/** Programme généré à partir du profil, avec l'avancement de la première semaine. */
+export interface StoredProgram {
+  id: 1
+  plan: Plan
+  generatedAt: number
+  /** Date d'application des budgets, absente tant que non appliqué. */
+  appliedAt?: number
+  /** Jours (1 à 7) cochés du plan de la première semaine. */
+  weekDone: number[]
 }

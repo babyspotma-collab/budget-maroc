@@ -70,3 +70,10 @@ export function formatMonthLabel(month: string, locale: string): string {
     dateFromISO(`${month}-01`),
   )
 }
+
+/** « 11 juillet 2027 » dans la locale donnée. */
+export function formatDateFull(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(
+    dateFromISO(iso),
+  )
+}

@@ -12,6 +12,8 @@ import type {
   Expense,
   MonthlyIncome,
   Recurring,
+  StoredProfile,
+  StoredProgram,
 } from './types'
 
 export class BudgetDB extends Dexie {
@@ -26,6 +28,8 @@ export class BudgetDB extends Dexie {
   daretPayments!: EntityTable<DaretPayment, 'id'>
   debts!: EntityTable<Debt, 'id'>
   debtPayments!: EntityTable<DebtPayment, 'id'>
+  profile!: EntityTable<StoredProfile, 'id'>
+  program!: EntityTable<StoredProgram, 'id'>
 
   constructor(name = 'budget-maroc') {
     super(name)
@@ -42,6 +46,12 @@ export class BudgetDB extends Dexie {
       daretPayments: '++id, roundId, [roundId+memberId]',
       debts: '++id, direction, status, dueDate',
       debtPayments: '++id, debtId',
+    })
+
+    // v2 : profil d'onboarding et programme personnalisé.
+    this.version(2).stores({
+      profile: 'id',
+      program: 'id',
     })
 
     this.on('populate', (tx) => {

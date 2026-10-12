@@ -7,77 +7,75 @@
  *  - les couleurs par défaut et le sens (icônes directionnelles inversées en RTL) dans `REGISTRY`.
  */
 import type { Icon as PhosphorIcon, IconWeight } from '@phosphor-icons/react'
-import {
-  Airplane,
-  ArrowDown,
-  ArrowUp,
-  Baby,
-  Barbell,
-  Basket,
-  Briefcase,
-  Buildings,
-  Bus,
-  CalendarCheck,
-  CalendarDots,
-  Car,
-  CaretLeft,
-  CaretRight,
-  ChartBar,
-  ChartLineUp,
-  Check,
-  Coffee,
-  Coins,
-  CookingPot,
-  DeviceMobile,
-  Envelope,
-  Eye,
-  EyeSlash,
-  FilmSlate,
-  FlagCheckered,
-  ForkKnife,
-  GasPump,
-  Gift,
-  GraduationCap,
-  HandCoins,
-  Handshake,
-  HandWaving,
-  Heart,
-  Hourglass,
-  House,
-  Laptop,
-  Lifebuoy,
-  Lightbulb,
-  List,
-  ListChecks,
-  MagnifyingGlass,
-  Mosque,
-  MoonStars,
-  NotePencil,
-  Package,
-  PawPrint,
-  PencilSimple,
-  Pill,
-  PiggyBank,
-  Plus,
-  PushPin,
-  Receipt,
-  Rocket,
-  Scales,
-  Scissors,
-  ShoppingBag,
-  ShoppingCart,
-  Storefront,
-  Target,
-  TrendDown,
-  TShirt,
-  UsersThree,
-  Wallet,
-  WarningOctagon,
-  Waves,
-  Wrench,
-  X,
-  Books,
-} from '@phosphor-icons/react'
+import { Airplane } from '@phosphor-icons/react/dist/csr/Airplane'
+import { ArrowDown } from '@phosphor-icons/react/dist/csr/ArrowDown'
+import { ArrowUp } from '@phosphor-icons/react/dist/csr/ArrowUp'
+import { Baby } from '@phosphor-icons/react/dist/csr/Baby'
+import { Barbell } from '@phosphor-icons/react/dist/csr/Barbell'
+import { Basket } from '@phosphor-icons/react/dist/csr/Basket'
+import { Books } from '@phosphor-icons/react/dist/csr/Books'
+import { Briefcase } from '@phosphor-icons/react/dist/csr/Briefcase'
+import { Buildings } from '@phosphor-icons/react/dist/csr/Buildings'
+import { Bus } from '@phosphor-icons/react/dist/csr/Bus'
+import { CalendarCheck } from '@phosphor-icons/react/dist/csr/CalendarCheck'
+import { CalendarDots } from '@phosphor-icons/react/dist/csr/CalendarDots'
+import { Car } from '@phosphor-icons/react/dist/csr/Car'
+import { CaretLeft } from '@phosphor-icons/react/dist/csr/CaretLeft'
+import { CaretRight } from '@phosphor-icons/react/dist/csr/CaretRight'
+import { ChartBar } from '@phosphor-icons/react/dist/csr/ChartBar'
+import { ChartLineUp } from '@phosphor-icons/react/dist/csr/ChartLineUp'
+import { Check } from '@phosphor-icons/react/dist/csr/Check'
+import { Coffee } from '@phosphor-icons/react/dist/csr/Coffee'
+import { Coins } from '@phosphor-icons/react/dist/csr/Coins'
+import { CookingPot } from '@phosphor-icons/react/dist/csr/CookingPot'
+import { DeviceMobile } from '@phosphor-icons/react/dist/csr/DeviceMobile'
+import { Envelope } from '@phosphor-icons/react/dist/csr/Envelope'
+import { Eye } from '@phosphor-icons/react/dist/csr/Eye'
+import { EyeSlash } from '@phosphor-icons/react/dist/csr/EyeSlash'
+import { FilmSlate } from '@phosphor-icons/react/dist/csr/FilmSlate'
+import { FlagCheckered } from '@phosphor-icons/react/dist/csr/FlagCheckered'
+import { ForkKnife } from '@phosphor-icons/react/dist/csr/ForkKnife'
+import { GasPump } from '@phosphor-icons/react/dist/csr/GasPump'
+import { Gift } from '@phosphor-icons/react/dist/csr/Gift'
+import { GraduationCap } from '@phosphor-icons/react/dist/csr/GraduationCap'
+import { HandCoins } from '@phosphor-icons/react/dist/csr/HandCoins'
+import { Handshake } from '@phosphor-icons/react/dist/csr/Handshake'
+import { HandWaving } from '@phosphor-icons/react/dist/csr/HandWaving'
+import { Heart } from '@phosphor-icons/react/dist/csr/Heart'
+import { Hourglass } from '@phosphor-icons/react/dist/csr/Hourglass'
+import { House } from '@phosphor-icons/react/dist/csr/House'
+import { Laptop } from '@phosphor-icons/react/dist/csr/Laptop'
+import { Lifebuoy } from '@phosphor-icons/react/dist/csr/Lifebuoy'
+import { Lightbulb } from '@phosphor-icons/react/dist/csr/Lightbulb'
+import { List } from '@phosphor-icons/react/dist/csr/List'
+import { ListChecks } from '@phosphor-icons/react/dist/csr/ListChecks'
+import { MagnifyingGlass } from '@phosphor-icons/react/dist/csr/MagnifyingGlass'
+import { MoonStars } from '@phosphor-icons/react/dist/csr/MoonStars'
+import { Mosque } from '@phosphor-icons/react/dist/csr/Mosque'
+import { NotePencil } from '@phosphor-icons/react/dist/csr/NotePencil'
+import { Package } from '@phosphor-icons/react/dist/csr/Package'
+import { PawPrint } from '@phosphor-icons/react/dist/csr/PawPrint'
+import { PencilSimple } from '@phosphor-icons/react/dist/csr/PencilSimple'
+import { PiggyBank } from '@phosphor-icons/react/dist/csr/PiggyBank'
+import { Pill } from '@phosphor-icons/react/dist/csr/Pill'
+import { Plus } from '@phosphor-icons/react/dist/csr/Plus'
+import { PushPin } from '@phosphor-icons/react/dist/csr/PushPin'
+import { Receipt } from '@phosphor-icons/react/dist/csr/Receipt'
+import { Rocket } from '@phosphor-icons/react/dist/csr/Rocket'
+import { Scales } from '@phosphor-icons/react/dist/csr/Scales'
+import { Scissors } from '@phosphor-icons/react/dist/csr/Scissors'
+import { ShoppingBag } from '@phosphor-icons/react/dist/csr/ShoppingBag'
+import { ShoppingCart } from '@phosphor-icons/react/dist/csr/ShoppingCart'
+import { Storefront } from '@phosphor-icons/react/dist/csr/Storefront'
+import { Target } from '@phosphor-icons/react/dist/csr/Target'
+import { TrendDown } from '@phosphor-icons/react/dist/csr/TrendDown'
+import { TShirt } from '@phosphor-icons/react/dist/csr/TShirt'
+import { UsersThree } from '@phosphor-icons/react/dist/csr/UsersThree'
+import { Wallet } from '@phosphor-icons/react/dist/csr/Wallet'
+import { WarningOctagon } from '@phosphor-icons/react/dist/csr/WarningOctagon'
+import { Waves } from '@phosphor-icons/react/dist/csr/Waves'
+import { Wrench } from '@phosphor-icons/react/dist/csr/Wrench'
+import { X } from '@phosphor-icons/react/dist/csr/X'
 
 /** Variante des icônes Phosphor (duotone = deux tons, cohérent avec les badges teintés). */
 const ICON_WEIGHT: IconWeight = 'duotone'

@@ -3,9 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { Button, Field, Sheet } from '../../components/ui'
 import { useToast } from '../../app/toast'
 import type { Category } from '../../db/types'
-import { CATEGORY_COLORS, CATEGORY_EMOJIS } from '../../domain/categories'
+import { CATEGORY_COLORS } from '../../domain/categories'
 import { addCategory, updateCategory } from './actions'
-import { CategoryIcon } from './CategoryIcon'
+import {
+  CategoryIcon,
+  iconNameForCategory,
+  PICKABLE_CATEGORY_ICONS,
+} from '../../components/ui/CategoryIcon'
 import { useCategoryLabel } from './hooks'
 
 interface CategorySheetProps {
@@ -21,14 +25,14 @@ export function CategorySheet({ open, onClose, category }: CategorySheetProps) {
   const label = useCategoryLabel()
 
   const [name, setName] = useState('')
-  const [icon, setIcon] = useState(CATEGORY_EMOJIS[0])
+  const [icon, setIcon] = useState<string>('other')
   const [color, setColor] = useState(CATEGORY_COLORS[0])
   const [error, setError] = useState<string | undefined>()
 
   useEffect(() => {
     if (!open) return
     setName(category ? label(category) : '')
-    setIcon(category?.icon ?? CATEGORY_EMOJIS[10])
+    setIcon((category && iconNameForCategory(category)) ?? 'other')
     setColor(category?.color ?? CATEGORY_COLORS[0])
     setError(undefined)
     // `label` dépend de la langue : on ne réinitialise que lorsque la feuille s'ouvre.
@@ -79,22 +83,26 @@ export function CategorySheet({ open, onClose, category }: CategorySheetProps) {
 
         <div>
           <p className="mb-2 text-sm font-medium text-muted">{t('categories.icon')}</p>
-          <div role="radiogroup" aria-label={t('categories.icon')} className="grid grid-cols-8 gap-1.5">
-            {CATEGORY_EMOJIS.map((e) => (
+          <div
+            role="radiogroup"
+            aria-label={t('categories.icon')}
+            className="grid grid-cols-6 gap-2"
+          >
+            {PICKABLE_CATEGORY_ICONS.map((name) => (
               <button
-                key={e}
+                key={name}
                 type="button"
                 role="radio"
-                aria-checked={icon === e}
-                onClick={() => setIcon(e)}
-                className={`flex aspect-square items-center justify-center rounded-xl text-xl ${
-                  icon === e ? 'bg-brand-50 ring-2 ring-brand-500' : 'bg-surface'
+                aria-checked={icon === name}
+                aria-label={name}
+                onClick={() => setIcon(name)}
+                className={`flex aspect-square items-center justify-center rounded-2xl ${
+                  icon === name ? 'bg-brand-50 ring-2 ring-brand-500' : 'bg-surface'
                 }`}
               >
-                {e}
+                <CategoryIcon name={name} color={color} size="xs" />
               </button>
-            ))}
-          </div>
+            ))}          </div>
         </div>
 
         <div>

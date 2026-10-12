@@ -22,7 +22,7 @@ export function MonthSwitcher({ month, onChange }: MonthSwitcherProps) {
         onClick={() => onChange(addMonths(month, -1))}
         className="flex size-10 items-center justify-center rounded-full text-ink hover:bg-surface"
       >
-        <ChevronLeftIcon className="rtl-flip" />
+        <ChevronLeftIcon />
       </button>
       <p className="min-w-36 text-center text-base font-bold first-letter:uppercase">
         {formatMonthLabel(month, locale)}
@@ -34,7 +34,7 @@ export function MonthSwitcher({ month, onChange }: MonthSwitcherProps) {
         onClick={() => onChange(addMonths(month, 1))}
         className="flex size-10 items-center justify-center rounded-full text-ink hover:bg-surface disabled:opacity-30"
       >
-        <ChevronRightIcon className="rtl-flip" />
+        <ChevronRightIcon />
       </button>
     </div>
   )

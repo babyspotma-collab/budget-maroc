@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { usePrefs } from '../../app/prefs'
 import { useQuickAdd } from '../../app/quickAdd'
 import { Button, Card, EmptyState, PageHeader } from '../../components/ui'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { currentMonth, formatMonthLabel } from '../../domain/dates'
 import {
   cumulativeByDay,
@@ -101,7 +102,15 @@ export function StatsPage() {
           <p className="mt-1 text-4xl font-extrabold leading-tight">{money(stats.totalCents)}</p>
           {changeText && (
             <p className="mt-1 text-sm text-muted">
-              <span aria-hidden>{change! > 0 ? '▲' : change! < 0 ? '▼' : '='} </span>
+              {change !== 0 && (
+                <CategoryIcon
+                  name={change! > 0 ? 'arrow_up' : 'arrow_down'}
+                  tone="plain"
+                  px={14}
+                  weight="bold"
+                  className="me-1 inline align-[-2px]"
+                />
+              )}
               {changeText}
             </p>
           )}

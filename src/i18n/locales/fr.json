@@ -297,7 +297,7 @@
     "notFound": "Tu n'as pas encore de programme.",
     "create": "Créer mon programme",
     "rules": {
-      "deficit": "Tes charges dépassent ton revenu de {{gap}} par mois ({{fixedPct}} % du revenu). Avant d'épargner : réduis une charge ou augmente tes revenus.",
+      "deficit": "Tes charges dépassent ton revenu de {{gap}} par mois ({{fixedPct}} % du revenu). Avant d’épargner : réduis une charge ou trouve {{needed}} de plus.",
       "daily_cap": "{{daily}} par jour au maximum pour tes dépenses variables, pas un dirham de plus.",
       "variable_floor": "Ton revenu varie : planifie sur {{planning}} ({{percent}} % de ta moyenne). Le surplus des bons mois va directement dans l’épargne.",
       "weekly_envelope": "Mets de côté {{weekly}} chaque semaine pour tes dépenses variables, et fais-les durer 7 jours.",
@@ -313,7 +313,9 @@
       "dependents_buffer": "Avec {{count}} personnes à charge, garde une enveloppe imprévus de {{buffer}} (santé et famille).",
       "student_cap": "Sorties : {{weeklyOutings}} par semaine au maximum.",
       "track_daily": "Note chaque dépense le jour même : deux touches suffisent.",
-      "weekly_review": "Chaque semaine, 5 minutes : compare tes dépenses au budget et ajuste."
+      "weekly_review": "Chaque semaine, 5 minutes : compare tes dépenses au budget et ajuste.",
+      "variable_shortfall": "Sur la base prudente de {{percent}} % de ton revenu moyen ({{planning}}), il te manque {{gap}} par mois. Les bons mois (environ {{averageMargin}} de reste), garde l’excédent pour tenir les mois creux.",
+      "essentials_first": "Priorité aux essentiels : logement, dettes, factures, nourriture. Aucune dépense de confort tant que ce n’est pas couvert."
     },
     "actions": {
       "apply_budgets": "Applique ton programme (bouton plus haut) et vérifie tes budgets.",
@@ -328,7 +330,43 @@
       "family_talk": "Parle du budget avec ta famille ({{count}} personnes concernées) pour que chacun joue le jeu.",
       "student_meals": "Prépare tes repas pour 3 jours (budget courses : {{groceries}}).",
       "plan_weekend": "Fixe ton budget sorties du week-end (mois : {{outings}}).",
-      "weekly_review": "Bilan de la semaine : dépensé contre budget, et ajuste si besoin."
+      "weekly_review": "Bilan de la semaine : dépensé contre budget, et ajuste si besoin.",
+      "negotiate": "Appelle ton propriétaire, ton créancier ou ta banque : demande un étalement ou une réduction.",
+      "income_ideas": "Note 3 façons d’augmenter tes revenus ce mois-ci (heures, mission, vente) et lance la première.",
+      "essentials_list": "Écris la liste de tes dépenses essentielles du mois et barre ce qui peut attendre."
+    },
+    "deficitCard": "Tes charges dépassent ton budget : voir les conseils",
+    "tight": "Budget serré : chaque dépense compte, suis-la de près.",
+    "deficit": {
+      "overTitle": "Tes charges dépassent ton revenu",
+      "lowTitle": "Il ne te reste presque rien après tes charges",
+      "shortfallTitle": "Les mois creux, tes charges ne sont pas couvertes",
+      "overBody": "Elles dépassent ton revenu de {{gap}} par mois. Pour vivre correctement (au moins {{vital}} par jour pour manger et te déplacer), il te faudrait environ {{needed}} de plus.",
+      "lowBody": "Après tes charges, il te reste {{margin}} par mois : moins que le minimum de vie ({{vital}} par jour). Il te manque environ {{needed}}.",
+      "shortfallBody": "Sur la base prudente de {{percent}} % de ton revenu moyen ({{planning}}), il te manque {{gap}} par mois. Dans un mois moyen, il te resterait {{margin}}, soit environ {{daily}} par jour.",
+      "noDaily": "Pas de budget du jour tant que ce déséquilibre n'est pas réglé.",
+      "adviceTitle": "Ce que tu peux faire",
+      "averageDaily": "Mois moyen : environ {{daily}} par jour"
+    },
+    "items": {
+      "rent": "ton loyer",
+      "credit": "ton crédit",
+      "school": "les frais d'école",
+      "bills": "tes factures",
+      "transport": "ton transport",
+      "debt": "le remboursement de ta dette",
+      "daret": "ton daret"
+    },
+    "advice": {
+      "reduce_biggest": "Ta plus grosse charge est {{name}} : {{amount}} par mois ({{percent}} % de ton revenu). Vise une économie d'au moins {{needed}} sur l'ensemble de tes charges.",
+      "raise_income": "Trouve au moins {{needed}} de plus par mois : heures supplémentaires, mission, vente, aide familiale temporaire.",
+      "renegotiate_credit": "Renégocie ou rééchelonne ton crédit (mensualité de {{monthly}}) : allonger la durée baisse l'échéance.",
+      "spread_debt": "Demande un étalement de ta dette ({{monthly}} par mois) : une échéance plus petite vaut mieux qu'un retard.",
+      "daret_review": "Parles-en à ton groupe de daret ({{monthly}} par mois) : une part plus petite ou un tour plus tard peut alléger tes mois difficiles.",
+      "bills_audit": "Passe en revue tes factures ({{bills}} par mois) : forfait téléphone, internet, eau, électricité.",
+      "variable_buffer": "Les mois creux, couvre d’abord les charges fixes. Les bons mois, mets de côté au moins {{gap}} pour compenser.",
+      "essentials_first": "Ordre de priorité : logement, dettes, factures, nourriture, transport. Le reste attend.",
+      "track_leaks": "Note chaque dépense pendant deux semaines pour repérer les fuites."
     }
   }
 }

@@ -6,7 +6,7 @@ import { useToast } from '../../app/toast'
 import type { Category } from '../../db/types'
 import { formatMonthLabel } from '../../domain/dates'
 import { centsToInput, parseMAD } from '../../domain/money'
-import { CategoryIcon } from '../categories/CategoryIcon'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { useCategoryLabel } from '../categories/hooks'
 import { setBudget } from './actions'
 

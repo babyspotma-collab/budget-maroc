@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button, Field } from '../../components/ui'
-import { ChevronLeftIcon } from '../../components/ui/icons'
+import { CategoryIcon, type IconName } from '../../components/ui/CategoryIcon'
+import { CheckIcon, ChevronLeftIcon } from '../../components/ui/icons'
 import type { Goal, IncomeKind, Problem, Situation } from '../../domain/plan'
 import { saveProgram, skipOnboarding } from '../program/actions'
 import { useProfile } from '../program/hooks'
@@ -17,27 +18,27 @@ import {
 } from './draft'
 import { MakingScreen } from './MakingScreen'
 
-const SITUATIONS: { value: Situation; icon: string }[] = [
-  { value: 'employee', icon: '💼' },
-  { value: 'self_employed', icon: '🛠️' },
-  { value: 'merchant', icon: '🏪' },
-  { value: 'student', icon: '🎓' },
-  { value: 'unemployed', icon: '🔎' },
+const SITUATIONS: { value: Situation; icon: IconName }[] = [
+  { value: 'employee', icon: 'sit_employee' },
+  { value: 'self_employed', icon: 'sit_self_employed' },
+  { value: 'merchant', icon: 'sit_merchant' },
+  { value: 'student', icon: 'sit_student' },
+  { value: 'unemployed', icon: 'sit_unemployed' },
 ]
 
-const GOALS: { value: Goal; icon: string }[] = [
-  { value: 'finish_month', icon: '🌙' },
-  { value: 'save', icon: '🐖' },
-  { value: 'repay_debt', icon: '🔗' },
-  { value: 'project', icon: '🏡' },
-  { value: 'understand', icon: '🔍' },
+const GOALS: { value: Goal; icon: IconName }[] = [
+  { value: 'finish_month', icon: 'goal_finish_month' },
+  { value: 'save', icon: 'goal_save' },
+  { value: 'repay_debt', icon: 'goal_repay_debt' },
+  { value: 'project', icon: 'goal_project' },
+  { value: 'understand', icon: 'goal_understand' },
 ]
 
-const PROBLEMS: { value: Problem; icon: string }[] = [
-  { value: 'impulsive', icon: '🛍️' },
-  { value: 'month_end', icon: '📉' },
-  { value: 'no_savings', icon: '🫙' },
-  { value: 'no_tracking', icon: '🙈' },
+const PROBLEMS: { value: Problem; icon: IconName }[] = [
+  { value: 'impulsive', icon: 'problem_impulsive' },
+  { value: 'month_end', icon: 'problem_month_end' },
+  { value: 'no_savings', icon: 'problem_no_savings' },
+  { value: 'no_tracking', icon: 'problem_no_tracking' },
 ]
 
 function ChoiceCard({
@@ -49,7 +50,7 @@ function ChoiceCard({
 }: {
   selected: boolean
   onClick: () => void
-  icon: string
+  icon: IconName
   title: string
   hint?: string
 }) {
@@ -63,9 +64,7 @@ function ChoiceCard({
         selected ? 'border-brand-500 bg-brand-50' : 'border-transparent shadow-(--shadow-card)'
       }`}
     >
-      <span aria-hidden className="text-2xl">
-        {icon}
-      </span>
+      <CategoryIcon name={icon} size="md" />
       <span className="min-w-0 flex-1">
         <span className="block font-bold">{title}</span>
         {hint && <span className="block text-sm text-muted">{hint}</span>}
@@ -76,7 +75,7 @@ function ChoiceCard({
           selected ? 'border-brand-500 bg-brand-500' : 'border-line-strong'
         }`}
       >
-        {selected ? '✓' : ''}
+        {selected ? <CheckIcon width={14} /> : null}
       </span>
     </button>
   )
@@ -222,7 +221,7 @@ export function OnboardingPage() {
           {(['regular', 'variable'] as IncomeKind[]).map((k) => (
             <ChoiceCard
               key={k}
-              icon={k === 'regular' ? '📅' : '🎢'}
+              icon={k === 'regular' ? 'income_regular' : 'income_variable'}
               title={t(`onboarding.q.incomeKind.${k}`)}
               hint={t(`onboarding.q.incomeKind.${k}Hint`)}
               selected={draft.incomeKind === k}
@@ -344,7 +343,7 @@ export function OnboardingPage() {
             aria-label={t('onboarding.back')}
             className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface"
           >
-            <ChevronLeftIcon className="rtl-flip" />
+            <ChevronLeftIcon />
           </button>
           <div
             role="progressbar"

@@ -227,7 +227,7 @@ describe('cas limites', () => {
     expect(plan.savingsGoal.targetDate).toBeNull()
     const rules = plan.rules.map((r) => r.id)
     expect(rules[0]).toBe('deficit')
-    expect(plan.rules[0].params.gapCents).toBe(-plan.marginCents)
+    expect(plan.rules[0].params.gapCents).toBe(Math.max(0, -plan.marginCents))
   })
 
   it('l\'épargne ne dépasse jamais la moitié de la marge', () => {
@@ -265,6 +265,229 @@ describe('cas limites', () => {
 
   it('sans dette : pas de plan de dette', () => {
     expect(generatePlan(employee, NOW).debt).toBeNull()
+  })
+})
+
+describe('charges supérieures au revenu : jamais de « 0 MAD » trompeur', () => {
+  const overRent: Profile = {
+    ...employee,
+    incomeCents: MAD(3000),
+    charges: { ...NO_CHARGES, rentCents: MAD(3500), billsCents: MAD(300) },
+    daretMonthlyCents: MAD(400),
+    dependents: 2,
+  }
+  const plan = generatePlan(overRent, NOW)
+
+  it('passe en statut « deficit » avec les montants du manque', () => {
+    expect(plan.status).toBe('deficit')
+    expect(plan.deficit).not.toBeNull()
+    const d = plan.deficit!
+    expect(d.kind).toBe('fixed_over_income')
+    expect(d.gapCents).toBe(MAD(3500 + 300 + 400 - 3000)) // 1 200 MAD au-dessus du revenu
+    expect(d.neededCents).toBe(d.gapCents + 2000 * 31) // + minimum de vie : 20 MAD × 31 jours
+    expect(d.averageDailyCents).toBe(0)
+  })
+
+  it('ne propose ni épargne ni dépense variable, et garde seulement les charges fixes', () => {
+    expect(plan.savingsCents).toBe(0)
+    expect(plan.spendableCents).toBe(0)
+    expect(plan.savingsGoal.months).toBeNull()
+    expect(plan.budgets.rent).toBe(MAD(3500))
+    expect(Object.keys(plan.budgets).sort()).toEqual(['phone', 'rent', 'utilities'])
+  })
+
+  it('remplace le budget du jour par des règles et conseils adaptés', () => {
+    const rules = plan.rules.map((r) => r.id)
+    expect(rules[0]).toBe('deficit')
+    expect(rules).toContain('essentials_first')
+    expect(rules).not.toContain('daily_cap')
+    expect(rules).not.toContain('daret_keep') // pas de « garde ton daret » quand on manque d'argent
+    expect(rules.length).toBeGreaterThanOrEqual(3)
+
+    const advice = plan.deficit!.advice
+    expect(advice.length).toBeGreaterThanOrEqual(3)
+    expect(advice.length).toBeLessThanOrEqual(4)
+    const reduce = advice.find((a) => a.id === 'reduce_biggest')!
+    expect(reduce.item).toBe('rent') // la charge la plus lourde
+    expect(reduce.params.amountCents).toBe(MAD(3500))
+    expect(advice.map((a) => a.id)).toContain('raise_income')
+  })
+
+  it('adapte les conseils aux charges réellement présentes', () => {
+    const withCredit = generatePlan(
+      { ...overRent, charges: { ...overRent.charges, creditCents: MAD(900) }, debtMonthlyCents: MAD(500) },
+      NOW,
+    ).deficit!.advice.map((a) => a.id)
+    expect(withCredit).toContain('renegotiate_credit')
+
+    const noExtras = generatePlan(
+      { ...overRent, daretMonthlyCents: 0, charges: { ...NO_CHARGES, rentCents: MAD(4000) } },
+      NOW,
+    ).deficit!.advice.map((a) => a.id)
+    expect(noExtras).not.toContain('renegotiate_credit')
+    expect(noExtras).not.toContain('spread_debt')
+    expect(noExtras).not.toContain('daret_review')
+  })
+
+  it('la première semaine devient un plan de redressement', () => {
+    const ids = plan.week1.map((a) => a.id)
+    expect(ids).toEqual([
+      'apply_budgets',
+      'log_all',
+      'check_bills',
+      'negotiate',
+      'income_ideas',
+      'essentials_list',
+      'weekly_review',
+    ])
+  })
+
+  it('cible la dette quand c\'est elle la plus lourde obligation', () => {
+    const debtHeavy = generatePlan(
+      {
+        ...employee,
+        incomeCents: MAD(4000),
+        charges: { ...NO_CHARGES, rentCents: MAD(1500) },
+        debtMonthlyCents: MAD(3000),
+        daretMonthlyCents: 0,
+        dependents: 0,
+      },
+      NOW,
+    )
+    expect(debtHeavy.status).toBe('deficit')
+    expect(debtHeavy.deficit!.advice.find((a) => a.id === 'reduce_biggest')?.item).toBe('debt')
+    expect(debtHeavy.deficit!.advice.map((a) => a.id)).toContain('spread_debt')
+  })
+
+  it('une marge presque nulle est aussi un déficit (moins que le minimum de vie)', () => {
+    const almost = generatePlan(
+      { ...employee, incomeCents: MAD(3000), charges: { ...NO_CHARGES, rentCents: MAD(2800) }, daretMonthlyCents: 0, dependents: 0 },
+      NOW,
+    )
+    expect(almost.marginCents).toBe(MAD(200))
+    expect(almost.status).toBe('deficit')
+    expect(almost.deficit!.gapCents).toBe(0)
+    expect(almost.deficit!.neededCents).toBe(2000 * 31 - MAD(200))
+  })
+
+  it('une marge pile à zéro est un déficit', () => {
+    const zero = generatePlan(
+      { ...employee, incomeCents: MAD(3000), charges: { ...NO_CHARGES, rentCents: MAD(3000) }, daretMonthlyCents: 0, dependents: 0 },
+      NOW,
+    )
+    expect(zero.marginCents).toBe(0)
+    expect(zero.status).toBe('deficit')
+  })
+})
+
+describe('revenu variable : base prudente de 70 %', () => {
+  const merchantShortfall: Profile = {
+    ...merchant,
+    incomeCents: MAD(5000),
+    charges: { ...NO_CHARGES, rentCents: MAD(2500), billsCents: MAD(500), transportCents: MAD(600) },
+    debtMonthlyCents: 0,
+    debtTotalCents: 0,
+    daretMonthlyCents: MAD(500),
+    dependents: 0,
+    goal: 'finish_month',
+  }
+
+  it('distingue « mois creux » d\'un vrai déficit (le revenu moyen couvre les charges)', () => {
+    const plan = generatePlan(merchantShortfall, NOW)
+    // 70 % de 5 000 = 3 500 < 4 100 de charges, alors que 5 000 les couvre largement
+    expect(plan.planningIncomeCents).toBe(MAD(3500))
+    expect(plan.status).toBe('deficit')
+    const d = plan.deficit!
+    expect(d.kind).toBe('variable_shortfall')
+    expect(d.gapCents).toBe(MAD(600))
+    expect(d.averageMarginCents).toBe(MAD(900))
+    expect(d.averageDailyCents).toBe(MAD(29)) // 900 / 31 jours, arrondi au dirham
+    expect(plan.rules[0].id).toBe('variable_shortfall')
+    expect(d.advice[0].id).toBe('variable_buffer')
+  })
+
+  it('un revenu régulier avec les mêmes chiffres ne déclenche pas le déficit', () => {
+    const plan = generatePlan({ ...merchantShortfall, incomeKind: 'regular' }, NOW)
+    expect(plan.status).not.toBe('deficit')
+    expect(plan.spendableCents).toBeGreaterThan(0)
+  })
+})
+
+describe('cohérence budgets / revenu (balayage de 3 000+ profils)', () => {
+  const profiles: Profile[] = []
+  for (const kind of ['regular', 'variable'] as const)
+    for (const income of [2500, 3000, 4500, 6000, 8000, 12000, 20000])
+      for (const rent of [0, 1000, 2000, 3000, 5000])
+        for (const bills of [0, 400])
+          for (const daret of [0, 600])
+            for (const dependents of [0, 2, 4])
+              for (const problem of ['impulsive', 'no_tracking'] as const)
+                for (const goal of ['save', 'repay_debt'] as const)
+                  profiles.push({
+                    ...employee,
+                    incomeKind: kind,
+                    incomeCents: MAD(income),
+                    charges: { ...NO_CHARGES, rentCents: MAD(rent), billsCents: MAD(bills), transportCents: MAD(250) },
+                    daretMonthlyCents: MAD(daret),
+                    debtMonthlyCents: goal === 'repay_debt' ? MAD(400) : 0,
+                    debtTotalCents: goal === 'repay_debt' ? MAD(9000) : 0,
+                    dependents,
+                    problem,
+                    goal,
+                  })
+
+  it('le sweep couvre assez de cas', () => {
+    expect(profiles.length).toBeGreaterThan(3000)
+  })
+
+  it('hors déficit : somme des budgets + épargne + obligations ≤ revenu, sans trou important', () => {
+    let checked = 0
+    for (const p of profiles) {
+      const plan = generatePlan(p, NOW)
+      if (plan.status === 'deficit') continue
+      checked++
+      const budgetsSum = Object.values(plan.budgets).reduce((s, v) => s + v, 0)
+      const committed =
+        budgetsSum + plan.savingsCents + plan.obligationsCents + (plan.debt?.extraCents ?? 0)
+      expect(committed).toBeLessThanOrEqual(plan.planningIncomeCents)
+      expect(committed).toBeLessThanOrEqual(p.incomeCents)
+      expect(committed).toBeGreaterThan(plan.planningIncomeCents - 1000) // < 10 MAD d'écart d'arrondi
+      expect(budgetsSum).toBe(plan.fixedCents + plan.spendableCents)
+      for (const v of Object.values(plan.budgets)) expect(v).toBeGreaterThan(0)
+    }
+    expect(checked).toBeGreaterThan(1000)
+  })
+
+  it('un budget du jour n\'est annoncé que s\'il vaut au moins le minimum de vie', () => {
+    for (const p of profiles) {
+      const plan = generatePlan(p, NOW)
+      if (plan.status === 'deficit') {
+        expect(plan.deficit).not.toBeNull()
+        expect(plan.deficit!.advice.length).toBeGreaterThan(0)
+        expect(plan.rules.map((r) => r.id)).not.toContain('daily_cap')
+      } else {
+        expect(plan.deficit).toBeNull()
+        expect(plan.dailyCents).toBeGreaterThanOrEqual(2000) // ≥ 20 MAD par jour
+        expect(plan.spendableCents).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('déficit : aucune épargne, et les budgets ne dépassent jamais le revenu disponible', () => {
+    let deficits = 0
+    for (const p of profiles) {
+      const plan = generatePlan(p, NOW)
+      if (plan.status !== 'deficit') continue
+      deficits++
+      expect(plan.savingsCents).toBe(0)
+      expect(plan.debt?.extraCents ?? 0).toBe(0)
+      // ce qui reste après charges (s'il en reste) va aux dépenses variables, sans plus
+      expect(plan.spendableCents).toBeLessThanOrEqual(Math.max(0, plan.marginCents))
+      expect(plan.spendableCents).toBeLessThan(2000 * 31)
+      const budgetsSum = Object.values(plan.budgets).reduce((s, v) => s + v, 0)
+      expect(budgetsSum).toBe(plan.fixedCents + plan.spendableCents)
+    }
+    expect(deficits).toBeGreaterThan(300)
   })
 })
 

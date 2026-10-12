@@ -18,7 +18,7 @@ import {
 } from '../../domain/expenses'
 import { useBudgetStatuses, useMonthLimits } from '../budgets/hooks'
 import { useCategoryLabel, useCategoryMap } from '../categories/hooks'
-import { CategoryIcon } from '../categories/CategoryIcon'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { loadDemoData } from '../demo/actions'
 import { ExpenseRow } from '../expenses/ExpenseRow'
 import { ExpenseSheet } from '../expenses/ExpenseSheet'
@@ -80,12 +80,7 @@ export function HomePage() {
 
   const header = (
     <div className="mb-4 flex items-center gap-3 pt-2">
-      <span
-        aria-hidden
-        className="flex size-11 items-center justify-center rounded-full bg-brand-50 text-xl"
-      >
-        👋
-      </span>
+      <CategoryIcon name="greeting" size="md" />
       <p className="text-lg font-bold">
         {stored ? t('home.greetingName', { name: stored.profile.firstName }) : t('home.greeting')}
       </p>
@@ -110,16 +105,20 @@ export function HomePage() {
     ) : program ? (
       <Link to="/programme" className="mb-4 block">
         <Card className="flex items-center gap-3 py-3">
-          <span aria-hidden className="flex size-10 items-center justify-center rounded-full bg-brand-50 text-lg">
-            🎯
-          </span>
+          <CategoryIcon name={program.plan.status === 'deficit' ? 'deficit' : 'program'} size="sm" />
           <span className="min-w-0 flex-1">
-            <span className="block text-xs font-medium text-muted">{t('plan.dailyTitle')}</span>
-            <span className="block font-extrabold">
-              {money(program.plan.dailyCents)} {t('plan.dailyPer')}
-            </span>
+            {program.plan.status === 'deficit' ? (
+              <span className="block text-sm font-bold">{t('plan.deficitCard')}</span>
+            ) : (
+              <>
+                <span className="block text-xs font-medium text-muted">{t('plan.dailyTitle')}</span>
+                <span className="block font-extrabold">
+                  {money(program.plan.dailyCents)} {t('plan.dailyPer')}
+                </span>
+              </>
+            )}
           </span>
-          <ChevronRightIcon className="rtl-flip text-muted" />
+          <ChevronRightIcon className="text-muted" />
         </Card>
       </Link>
     ) : null
@@ -172,10 +171,11 @@ export function HomePage() {
               tone={alerts.some((a) => a.level === 'over') ? 'danger' : 'warning'}
               className="py-3"
             >
-              <p className="text-sm font-semibold">
-                ⚠ {alertLine(alerts[0])}
+              <p className="flex items-center gap-2 text-sm font-semibold">
+                <CategoryIcon name="deficit" tone="plain" px={20} />
+                <span>{alertLine(alerts[0])}
                 {alerts.length > 1 &&
-                  ` · ${t('home.alertMore', { count: num(alerts.length - 1) })}`}
+                  ` · ${t('home.alertMore', { count: num(alerts.length - 1) })}`}</span>
               </p>
             </Card>
           </Link>
@@ -190,7 +190,7 @@ export function HomePage() {
               className="inline-flex items-center gap-0.5 text-sm font-semibold text-brand-600"
             >
               {t('common.seeAll')}
-              <ChevronRightIcon width={18} height={18} className="rtl-flip" />
+              <ChevronRightIcon width={18} />
             </Link>
           </div>
           <Card className="p-5">
@@ -259,7 +259,7 @@ export function HomePage() {
                 className="inline-flex items-center gap-0.5 text-sm font-semibold text-brand-600"
               >
                 {t('nav.budgets')}
-                <ChevronRightIcon width={18} height={18} className="rtl-flip" />
+                <ChevronRightIcon width={18} />
               </Link>
             </div>
             <ul className="grid grid-cols-2 gap-3">

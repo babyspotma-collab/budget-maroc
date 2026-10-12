@@ -4,32 +4,107 @@ import { useTranslation } from 'react-i18next'
 import { usePrefs } from '../../app/prefs'
 import { useToast } from '../../app/toast'
 import { Button, Card, EmptyState, PageHeader } from '../../components/ui'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { currentMonth, formatDateFull, formatMonthLabel } from '../../domain/dates'
-import { nextPayDate, VARIABLE_INCOME_FACTOR, type Plan } from '../../domain/plan'
-import { CategoryIcon } from '../categories/CategoryIcon'
+import {
+  nextPayDate,
+  VARIABLE_INCOME_FACTOR,
+  type DeficitInfo,
+  type Plan,
+} from '../../domain/plan'
 import { useCategories, useCategoryLabel } from '../categories/hooks'
 import { applyProgram, toggleWeekDay } from './actions'
 import { formatParams } from './format'
 import { useProfile, useProgram } from './hooks'
 
-const RULE_ICONS: Record<string, string> = {
-  deficit: '🚨',
-  daily_cap: '🎯',
-  variable_floor: '🎢',
-  weekly_envelope: '✉️',
-  debt_first: '🔗',
-  debt_minimum: '📌',
-  fixed_charges_high: '🏠',
-  impulse_24h: '⏳',
-  month_end_half: '🌗',
-  no_savings_auto: '🐖',
-  pay_day_savings: '💸',
-  daret_keep: '🤝',
-  savings_goal: '🏁',
-  dependents_buffer: '👨‍👩‍👧',
-  student_cap: '🎓',
-  track_daily: '📝',
-  weekly_review: '🗓️',
+type Translate = (key: string, options?: Record<string, unknown>) => string
+
+/** Explication du déficit : titre, texte précis selon la situation, et ce qu'on peut faire. */
+function DeficitSection({
+  deficit,
+  planningCents,
+  money,
+  num,
+  t,
+}: {
+  deficit: DeficitInfo
+  planningCents: number
+  money: (c: number) => string
+  num: (n: number) => string
+  t: Translate
+}) {
+  const shortfall = deficit.kind === 'variable_shortfall'
+  const low = !shortfall && deficit.gapCents === 0
+
+  const title = shortfall
+    ? t('plan.deficit.shortfallTitle')
+    : low
+      ? t('plan.deficit.lowTitle')
+      : t('plan.deficit.overTitle')
+
+  const body = shortfall
+    ? t('plan.deficit.shortfallBody', {
+        percent: num(Math.round(VARIABLE_INCOME_FACTOR * 100)),
+        planning: money(planningCents),
+        gap: money(deficit.gapCents),
+        margin: money(deficit.averageMarginCents),
+        daily: money(deficit.averageDailyCents),
+      })
+    : low
+      ? t('plan.deficit.lowBody', {
+          margin: money(Math.max(0, deficit.marginCents)),
+          vital: money(deficit.vitalDailyCents),
+          needed: money(deficit.neededCents),
+        })
+      : t('plan.deficit.overBody', {
+          gap: money(deficit.gapCents),
+          vital: money(deficit.vitalDailyCents),
+          needed: money(deficit.neededCents),
+        })
+
+  return (
+    <>
+      <section
+        className="rounded-3xl bg-linear-to-br from-danger-600 to-[#8f2415] p-6 text-white shadow-(--shadow-card)"
+        aria-label={title}
+      >
+        <CategoryIcon
+          name={shortfall ? 'variable_shortfall' : 'deficit'}
+          size="md"
+          tone="solid"
+          color="#ffffff"
+          iconColor="#c2321f"
+        />
+        <h2 className="mt-4 text-2xl font-extrabold leading-snug">{title}</h2>
+        <p className="mt-3 text-sm leading-relaxed text-white/90">{body}</p>
+        {shortfall && deficit.averageDailyCents > 0 && (
+          <p className="mt-4 rounded-xl bg-white/15 px-3 py-2 text-sm font-semibold">
+            {t('plan.deficit.averageDaily', { daily: money(deficit.averageDailyCents) })}
+          </p>
+        )}
+        <p className="mt-4 text-xs text-white/80">{t('plan.deficit.noDaily')}</p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 px-1 text-sm font-bold">{t('plan.deficit.adviceTitle')}</h2>
+        <ul className="space-y-3">
+          {deficit.advice.map((a) => (
+            <li key={a.id}>
+              <Card className="flex gap-3 p-4">
+                <CategoryIcon name={a.id} size="sm" />
+                <p className="text-sm leading-relaxed">
+                  {t(`plan.advice.${a.id}`, {
+                    ...formatParams(a.params, money, num),
+                    name: a.item ? t(`plan.items.${a.item}`) : '',
+                  })}
+                </p>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
+  )
 }
 
 export function ProgramPage() {
@@ -71,7 +146,8 @@ export function ProgramPage() {
   const { profile } = stored
   const plan: Plan = program.plan
   const month = currentMonth()
-  const deficit = plan.marginCents <= 0
+  const deficit = plan.status === 'deficit' && plan.deficit !== null
+  const tight = plan.status === 'tight'
   const applied = program.appliedAt !== undefined
   const goal = plan.savingsGoal
 
@@ -100,33 +176,40 @@ export function ProgramPage() {
       />
 
       <div className="space-y-5">
-        {deficit && (
-          <Card tone="danger">
-            <h2 className="font-bold">{t('plan.deficitTitle')}</h2>
-            <p className="mt-1 text-sm">
-              {t('plan.deficitBody', { gap: money(Math.max(0, -plan.marginCents)) })}
+        {deficit && plan.deficit ? (
+          <DeficitSection
+            deficit={plan.deficit}
+            planningCents={plan.planningIncomeCents}
+            money={money}
+            num={num}
+            t={t as unknown as Translate}
+          />
+        ) : (
+          /* Carte principale : budget du jour (jamais affiché à 0) */
+          <section
+            className="rounded-3xl bg-linear-to-br from-brand-500 to-brand-700 p-6 text-white shadow-(--shadow-card)"
+            aria-label={t('plan.dailyTitle')}
+          >
+            <p className="text-sm font-medium text-white/85">{t('plan.dailyTitle')}</p>
+            <p className="mt-1 text-5xl font-extrabold leading-tight">{money(plan.dailyCents)}</p>
+            <p className="text-lg font-semibold">{t('plan.dailyPer')}</p>
+            <p className="mt-3 text-sm text-white/85">{t('plan.dailyHint')}</p>
+            <p className="mt-1 text-sm font-medium text-white/95">
+              {t('plan.weekly', { amount: money(plan.weeklyCents) })}
             </p>
-          </Card>
+            {tight && (
+              <p className="mt-3 flex items-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-xs font-medium">
+                <CategoryIcon name="fixed_charges_high" tone="plain" px={18} iconColor="#fff" />
+                {t('plan.tight')}
+              </p>
+            )}
+            {profile.incomeKind === 'variable' && (
+              <p className="mt-3 rounded-xl bg-white/15 px-3 py-2 text-xs">
+                {t('plan.variableNote', { percent: num(Math.round(VARIABLE_INCOME_FACTOR * 100)) })}
+              </p>
+            )}
+          </section>
         )}
-
-        {/* Carte principale : budget du jour */}
-        <section
-          className="rounded-3xl bg-linear-to-br from-brand-500 to-brand-700 p-6 text-white shadow-(--shadow-card)"
-          aria-label={t('plan.dailyTitle')}
-        >
-          <p className="text-sm font-medium text-white/85">{t('plan.dailyTitle')}</p>
-          <p className="mt-1 text-5xl font-extrabold leading-tight">{money(plan.dailyCents)}</p>
-          <p className="text-lg font-semibold">{t('plan.dailyPer')}</p>
-          <p className="mt-3 text-sm text-white/85">{t('plan.dailyHint')}</p>
-          <p className="mt-1 text-sm font-medium text-white/95">
-            {t('plan.weekly', { amount: money(plan.weeklyCents) })}
-          </p>
-          {profile.incomeKind === 'variable' && (
-            <p className="mt-3 rounded-xl bg-white/15 px-3 py-2 text-xs">
-              {t('plan.variableNote', { percent: num(Math.round(VARIABLE_INCOME_FACTOR * 100)) })}
-            </p>
-          )}
-        </section>
 
         {/* Répartition du revenu */}
         <Card>
@@ -212,12 +295,7 @@ export function ProgramPage() {
             {plan.rules.map((rule, i) => (
               <li key={rule.id}>
                 <Card className="flex gap-3 p-4">
-                  <span
-                    aria-hidden
-                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-lg"
-                  >
-                    {RULE_ICONS[rule.id] ?? '✔️'}
-                  </span>
+                  <CategoryIcon name={rule.id} size="sm" />
                   <p className="text-sm leading-relaxed">
                     <span className="sr-only">{num(i + 1)}. </span>
                     {t(`plan.rules.${rule.id}`, formatParams(rule.params, money, num))}
@@ -257,16 +335,11 @@ export function ProgramPage() {
                     onClick={() => void toggleWeekDay(action.day)}
                     className="flex w-full items-start gap-3 rounded-2xl bg-surface p-3 text-start shadow-(--shadow-card)"
                   >
-                    <span
-                      aria-hidden
-                      className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border-2 text-sm font-bold ${
-                        done
-                          ? 'border-mint-600 bg-mint-600 text-white'
-                          : 'border-line-strong text-muted'
-                      }`}
-                    >
-                      {done ? '✓' : num(action.day)}
-                    </span>
+                    {done ? (
+                      <CategoryIcon name="check" size="sm" tone="solid" color="#138a5e" />
+                    ) : (
+                      <CategoryIcon name={action.id} size="sm" />
+                    )}
                     <span className="min-w-0 flex-1">
                       <span className="block text-xs font-semibold text-muted">
                         {t('plan.day', { n: num(action.day) })}
@@ -285,7 +358,10 @@ export function ProgramPage() {
         {/* Appliquer */}
         {applied ? (
           <Card tone="accent">
-            <p className="font-bold">✓ {t('plan.applied')}</p>
+            <p className="flex items-center gap-2 font-bold">
+              <CategoryIcon name="check" tone="plain" px={20} weight="bold" iconColor="#138a5e" />
+              {t('plan.applied')}
+            </p>
             <p className="mt-1 text-sm text-muted">
               {t('plan.appliedBody', { month: formatMonthLabel(month, locale) })}
             </p>

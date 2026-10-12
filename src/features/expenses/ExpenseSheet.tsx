@@ -8,7 +8,7 @@ import { sortByRecentUse } from '../../domain/categories'
 import { isValidISODate, monthOf, todayISO } from '../../domain/dates'
 import { budgetCrossing, type Crossing } from '../budgets/actions'
 import { centsToInput, parseMAD } from '../../domain/money'
-import { CategoryIcon } from '../categories/CategoryIcon'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { useCategories, useCategoryLabel } from '../categories/hooks'
 import { addExpense, deleteExpense, restoreExpense, updateExpense } from './actions'
 import { useRecentExpenses } from './hooks'
@@ -94,7 +94,7 @@ export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
     })
     onClose()
     const warning = alertText(crossing, chosenCategory)
-    toast.show(warning ? `${t('add.saved')} · ⚠ ${warning}` : t('add.saved'), {
+    toast.show(warning ? `${t('add.saved')} · ${warning}` : t('add.saved'), {
       actionLabel: t('common.undo'),
       onAction: () => void deleteExpense(id),
     })
@@ -119,7 +119,7 @@ export function ExpenseSheet({ open, onClose, expense }: ExpenseSheetProps) {
     })
     onClose()
     const warning = alertText(crossing, categoryId)
-    toast.show(warning ? `${t('add.updated')} · ⚠ ${warning}` : t('add.updated'))
+    toast.show(warning ? `${t('add.updated')} · ${warning}` : t('add.updated'))
   }
 
   async function remove() {

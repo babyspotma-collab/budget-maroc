@@ -49,7 +49,7 @@ function MenuLink({ to, children }: { to: string; children: string }) {
       className="flex min-h-14 items-center justify-between px-3 font-medium hover:bg-line/40"
     >
       {children}
-      <ChevronRightIcon className="rtl-flip text-muted" />
+      <ChevronRightIcon className="text-muted" />
     </Link>
   )
 }

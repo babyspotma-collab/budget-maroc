@@ -4,7 +4,7 @@ import { Button, Card, PageHeader } from '../../components/ui'
 import { EyeIcon, EyeOffIcon, PencilIcon } from '../../components/ui/icons'
 import type { Category } from '../../db/types'
 import { setCategoryHidden } from './actions'
-import { CategoryIcon } from './CategoryIcon'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { CategorySheet } from './CategorySheet'
 import { useCategories, useCategoryLabel } from './hooks'
 

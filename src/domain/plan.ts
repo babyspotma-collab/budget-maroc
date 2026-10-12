@@ -39,6 +39,8 @@ export interface Profile {
 
 export type RuleId =
   | 'deficit'
+  | 'variable_shortfall'
+  | 'essentials_first'
   | 'daily_cap'
   | 'variable_floor'
   | 'weekly_envelope'
@@ -69,7 +71,24 @@ export type ActionId =
   | 'family_talk'
   | 'student_meals'
   | 'plan_weekend'
+  | 'negotiate'
+  | 'income_ideas'
+  | 'essentials_list'
   | 'weekly_review'
+
+/** Charges ou obligations pouvant être ciblées par un conseil. */
+export type ItemKey = 'rent' | 'credit' | 'school' | 'bills' | 'transport' | 'debt' | 'daret'
+
+export type AdviceId =
+  | 'reduce_biggest'
+  | 'raise_income'
+  | 'renegotiate_credit'
+  | 'spread_debt'
+  | 'daret_review'
+  | 'bills_audit'
+  | 'variable_buffer'
+  | 'essentials_first'
+  | 'track_leaks'
 
 /** Paramètres : les clés finissant par « Cents » sont des montants à formater en MAD. */
 export type Params = Record<string, number>
@@ -83,6 +102,12 @@ export interface PlanAction {
   day: number
   id: ActionId
   params: Params
+}
+
+export interface PlanAdvice {
+  id: AdviceId
+  params: Params
+  item?: ItemKey
 }
 
 export interface SavingsGoal {
@@ -103,7 +128,35 @@ export interface DebtPlan {
   payoffDate: string | null
 }
 
+/**
+ * Situation où le budget journalier n'a pas de sens (≈ 0) : au lieu d'afficher « 0 MAD »,
+ * le programme explique le manque et propose des pistes adaptées.
+ */
+export interface DeficitInfo {
+  /**
+   * - `fixed_over_income` : les charges dépassent (ou absorbent) le revenu ;
+   * - `variable_shortfall` : revenu variable — la base prudente (70 %) ne couvre pas les
+   *   charges alors que le revenu moyen déclaré les couvre.
+   */
+  kind: 'fixed_over_income' | 'variable_shortfall'
+  /** Charges au-dessus du revenu de planification (≥ 0). */
+  gapCents: number
+  /** Montant à trouver en plus pour vivre au minimum (vitalDailyCents × jours). */
+  neededCents: number
+  /** Ce qu'il reste après charges sur la base de planification (peut être négatif). */
+  marginCents: number
+  vitalDailyCents: number
+  /** Marge et budget journalier d'un mois « moyen » (revenu déclaré), sinon 0. */
+  averageMarginCents: number
+  averageDailyCents: number
+  advice: PlanAdvice[]
+}
+
+export type PlanStatus = 'ok' | 'tight' | 'deficit'
+
 export interface Plan {
+  status: PlanStatus
+  deficit: DeficitInfo | null
   /** Revenu retenu pour planifier (70 % du revenu moyen s'il est variable). */
   planningIncomeCents: number
   fixedCents: number
@@ -114,6 +167,7 @@ export interface Plan {
   savingsCents: number
   /** Enveloppe des dépenses variables du mois. */
   spendableCents: number
+  /** Jamais à afficher quand `status === 'deficit'`. */
   dailyCents: number
   weeklyCents: number
   /** Budget mensuel par clé de catégorie prédéfinie (montants > 0 uniquement). */
@@ -125,11 +179,17 @@ export interface Plan {
 }
 
 export const VARIABLE_INCOME_FACTOR = 0.7
-const ROUND_TO = 1000 // 10 MAD
+/** Minimum de vie : en dessous, le budget variable n'est pas réaliste. */
+export const VITAL_DAILY_CENTS = 2000 // 20 MAD par jour
+/** Sous ce seuil, le budget est annoncé comme « serré ». */
+export const TIGHT_DAILY_CENTS = 3000 // 30 MAD par jour
 
-const roundTo = (cents: number, step: number = ROUND_TO) => Math.round(cents / step) * step
+const UNIT = 1000 // les budgets sont des multiples de 10 MAD
+
+const roundTo = (cents: number, step: number = UNIT) => Math.round(cents / step) * step
 const floorTo = (cents: number, step: number) => Math.floor(cents / step) * step
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
+const sum = (values: number[]) => values.reduce((s, v) => s + v, 0)
 
 const SAVE_RATE: Record<Goal, number> = {
   save: 0.15,
@@ -164,10 +224,38 @@ function variableWeights(p: Profile): Record<string, number> {
   return w
 }
 
+/**
+ * Répartit `total` en multiples de `unit` selon des poids (plus forts restes).
+ * La somme renvoyée est toujours ≤ `total` : aucune catégorie ne « déborde ».
+ */
+function allocate(total: number, weights: Record<string, number>, unit: number): Record<string, number> {
+  const keys = Object.keys(weights)
+  const units = Math.max(0, Math.floor(total / unit))
+  const totalWeight = sum(Object.values(weights))
+  const out: Record<string, number> = {}
+  if (units === 0 || totalWeight <= 0) {
+    for (const k of keys) out[k] = 0
+    return out
+  }
+  const exact = keys.map((k) => ({ k, v: (units * weights[k]) / totalWeight }))
+  let left = units
+  for (const e of exact) {
+    out[e.k] = Math.floor(e.v)
+    left -= out[e.k]
+  }
+  exact
+    .sort((a, b) => b.v - Math.floor(b.v) - (a.v - Math.floor(a.v)) || a.k.localeCompare(b.k))
+    .slice(0, left)
+    .forEach((e) => (out[e.k] += 1))
+  for (const k of keys) out[k] *= unit
+  return out
+}
+
 export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
   const p = profile
   const variable = p.incomeKind === 'variable'
   const c = p.charges
+  const days = daysInMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`)
 
   const planningIncomeCents = variable
     ? roundTo(p.incomeCents * VARIABLE_INCOME_FACTOR, 100)
@@ -175,8 +263,11 @@ export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
   const fixedCents = c.rentCents + c.creditCents + c.schoolCents + c.billsCents + c.transportCents
   const obligationsCents = p.debtMonthlyCents + p.daretMonthlyCents
   const marginCents = planningIncomeCents - fixedCents - obligationsCents
+  const declaredMarginCents = p.incomeCents - fixedCents - obligationsCents
   const fixedRatio =
     planningIncomeCents > 0 ? (fixedCents + obligationsCents) / planningIncomeCents : 1
+  // Minimum de vie du mois : on n'épargne jamais en dessous.
+  const vitalMonthly = VITAL_DAILY_CENTS * days
 
   // --- Épargne mensuelle -------------------------------------------------
   let rate = SAVE_RATE[p.goal]
@@ -189,43 +280,39 @@ export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
   else if (fixedRatio > 0.7) rate = Math.min(rate, 0.03)
   rate = Math.max(0, rate)
 
-  let savingsCents =
-    marginCents > 0
-      ? Math.min(roundTo(planningIncomeCents * rate), floorTo(marginCents * 0.5, ROUND_TO))
-      : 0
+  const aboveVital = floorTo(Math.max(0, marginCents - vitalMonthly), UNIT)
+  let savingsCents = Math.min(
+    roundTo(planningIncomeCents * rate),
+    floorTo(Math.max(0, marginCents) * 0.5, UNIT),
+    aboveVital,
+  )
 
   // --- Dette : on y met un quart du reste si c'est l'objectif ----------------
   let extraDebtCents = 0
   if (p.goal === 'repay_debt' && (p.debtTotalCents > 0 || p.debtMonthlyCents > 0)) {
-    const room = Math.max(0, marginCents - savingsCents)
-    extraDebtCents = floorTo(room * 0.25, ROUND_TO)
+    const room = Math.max(0, marginCents - savingsCents - vitalMonthly)
+    extraDebtCents = floorTo(room * 0.25, UNIT)
   }
 
   // --- Dépenses variables par catégorie ---------------------------------------
   const pool = Math.max(0, marginCents - savingsCents - extraDebtCents)
-  const weights = variableWeights(p)
-  const totalWeight = Object.values(weights).reduce((s, v) => s + v, 0)
-  const raw: Record<string, number> = {}
-  for (const [key, weight] of Object.entries(weights)) raw[key] = (pool * weight) / totalWeight
+  const variableBudgets = allocate(pool, variableWeights(p), UNIT)
 
   // Impulsif : on plafonne les catégories « tentation », l'écart part en épargne.
-  let redirectedCents = 0
   if (p.problem === 'impulsive') {
-    for (const key of ['outings', 'clothing', 'other']) {
-      const cut = raw[key] * 0.4
-      raw[key] -= cut
-      redirectedCents += cut
-    }
-    savingsCents += roundTo(redirectedCents)
+    const keys = ['outings', 'clothing', 'other']
+    const cuts = keys.map((k) => floorTo(variableBudgets[k] * 0.4, UNIT))
+    const total = sum(cuts)
+    const room = Math.max(0, sum(Object.values(variableBudgets)) - vitalMonthly)
+    const factor = total > 0 ? Math.min(1, room / total) : 0
+    keys.forEach((k, i) => {
+      const cut = floorTo(cuts[i] * factor, UNIT)
+      variableBudgets[k] -= cut
+      savingsCents += cut
+    })
   }
 
-  // Arrondi à 10 MAD ; le reliquat est absorbé par les courses (jamais négatif).
-  const rounded: Record<string, number> = {}
-  for (const [key, v] of Object.entries(raw)) rounded[key] = Math.max(0, roundTo(v))
-  const roundedSum = Object.values(rounded).reduce((s, v) => s + v, 0)
-  rounded.groceries = Math.max(0, rounded.groceries + roundTo(pool - redirectedCents) - roundedSum)
-
-  const spendableCents = Object.values(rounded).reduce((s, v) => s + v, 0)
+  const spendableCents = sum(Object.values(variableBudgets))
 
   // Charges fixes rattachées aux catégories.
   const budgets: Record<string, number> = {}
@@ -239,12 +326,19 @@ export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
   add('phone', c.billsCents - utilities)
   add('transport', c.transportCents)
   add('other', c.creditCents)
-  for (const [key, v] of Object.entries(rounded)) add(key, v)
+  for (const [key, v] of Object.entries(variableBudgets)) add(key, v)
 
   // --- Budget journalier -------------------------------------------------------
-  const days = daysInMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`)
   const dailyCents = floorTo(spendableCents / days, 100)
   const weeklyCents = floorTo(spendableCents / (days / 7), 100)
+
+  // --- Statut : le budget du jour n'est annoncé que s'il a un sens --------------
+  const deficit = marginCents < vitalMonthly
+  const status: PlanStatus = deficit
+    ? 'deficit'
+    : dailyCents < TIGHT_DAILY_CENTS || fixedRatio > 0.85
+      ? 'tight'
+      : 'ok'
 
   // --- Objectif d'épargne --------------------------------------------------------
   const essentialCents = fixedCents + obligationsCents
@@ -287,6 +381,7 @@ export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
   }
 
   const base = {
+    status,
     planningIncomeCents,
     fixedCents,
     obligationsCents,
@@ -301,7 +396,29 @@ export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
     debt,
   }
 
-  return { ...base, rules: selectRules(p, base), week1: weekOne(p, base) }
+  let deficitInfo: DeficitInfo | null = null
+  if (status === 'deficit') {
+    const averageMarginCents = Math.max(0, declaredMarginCents)
+    const shortfall = variable && declaredMarginCents >= vitalMonthly
+    deficitInfo = {
+      kind: shortfall ? 'variable_shortfall' : 'fixed_over_income',
+      gapCents: Math.max(0, -marginCents),
+      neededCents: Math.max(0, vitalMonthly - marginCents),
+      marginCents,
+      vitalDailyCents: VITAL_DAILY_CENTS,
+      averageMarginCents,
+      averageDailyCents: variable ? floorTo(averageMarginCents / days, 100) : 0,
+      advice: [],
+    }
+    deficitInfo.advice = deficitAdvice(p, deficitInfo)
+  }
+
+  return {
+    ...base,
+    deficit: deficitInfo,
+    rules: selectRules(p, base, deficitInfo),
+    week1: weekOne(p, base),
+  }
 }
 
 /** Ajoute des mois à une date ISO en gardant le jour (borné à la fin du mois). */
@@ -311,7 +428,69 @@ export function shiftMonths(iso: string, months: number): string {
   return `${month}-${String(day).padStart(2, '0')}`
 }
 
-type Base = Omit<Plan, 'rules' | 'week1'>
+type Base = Omit<Plan, 'rules' | 'week1' | 'deficit'>
+
+/** La charge ou l'obligation la plus lourde, cible naturelle d'une réduction. */
+function biggestItem(p: Profile): { item: ItemKey; cents: number } | null {
+  const items: [ItemKey, number][] = [
+    ['rent', p.charges.rentCents],
+    ['credit', p.charges.creditCents],
+    ['school', p.charges.schoolCents],
+    ['bills', p.charges.billsCents],
+    ['transport', p.charges.transportCents],
+    ['debt', p.debtMonthlyCents],
+    ['daret', p.daretMonthlyCents],
+  ]
+  const top = items.sort((a, b) => b[1] - a[1])[0]
+  return top && top[1] > 0 ? { item: top[0], cents: top[1] } : null
+}
+
+/** Conseils adaptés à ce qui pèse vraiment dans le budget de la personne. */
+function deficitAdvice(p: Profile, d: DeficitInfo): PlanAdvice[] {
+  const advice: PlanAdvice[] = []
+  const top = biggestItem(p)
+  const income = p.incomeCents
+
+  if (d.kind === 'variable_shortfall') {
+    advice.push({
+      id: 'variable_buffer',
+      params: { gapCents: d.gapCents, averageMarginCents: d.averageMarginCents },
+    })
+  } else if (d.neededCents > 0) {
+    advice.push({ id: 'raise_income', params: { neededCents: d.neededCents } })
+  }
+
+  if (top) {
+    advice.push({
+      id: 'reduce_biggest',
+      item: top.item,
+      params: {
+        amountCents: top.cents,
+        percent: income > 0 ? Math.round((top.cents * 100) / income) : 0,
+        neededCents: d.neededCents,
+      },
+    })
+  }
+
+  if (p.charges.creditCents > 0) {
+    advice.push({ id: 'renegotiate_credit', params: { monthlyCents: p.charges.creditCents } })
+  }
+  if (p.debtMonthlyCents > 0) {
+    advice.push({ id: 'spread_debt', params: { monthlyCents: p.debtMonthlyCents } })
+  }
+  if (p.daretMonthlyCents > 0 && d.kind === 'fixed_over_income') {
+    advice.push({ id: 'daret_review', params: { monthlyCents: p.daretMonthlyCents } })
+  }
+  if (p.charges.billsCents > 0) {
+    advice.push({ id: 'bills_audit', params: { billsCents: p.charges.billsCents } })
+  }
+
+  advice.push({ id: 'essentials_first', params: {} })
+  advice.push({ id: 'track_leaks', params: {} })
+
+  // On garde 4 conseils au plus, les plus spécifiques d'abord.
+  return advice.slice(0, 4)
+}
 
 interface Candidate {
   rule: PlanRule
@@ -319,19 +498,33 @@ interface Candidate {
 }
 
 /** Choisit 3 à 5 règles selon le profil : les priorités changent avec les réponses. */
-function selectRules(p: Profile, b: Base): PlanRule[] {
+function selectRules(p: Profile, b: Base, deficit: DeficitInfo | null): PlanRule[] {
   const variable = p.incomeKind === 'variable'
   const out: Candidate[] = []
   const push = (id: RuleId, priority: number, params: Params = {}) =>
     out.push({ rule: { id, params }, priority })
 
-  if (b.marginCents <= 0) {
-    push('deficit', 100, { gapCents: -b.marginCents, fixedPct: Math.round(b.fixedRatio * 100) })
+  if (deficit) {
+    if (deficit.kind === 'variable_shortfall') {
+      push('variable_shortfall', 100, {
+        gapCents: deficit.gapCents,
+        planningCents: b.planningIncomeCents,
+        percent: Math.round(VARIABLE_INCOME_FACTOR * 100),
+        averageMarginCents: deficit.averageMarginCents,
+      })
+    } else {
+      push('deficit', 100, {
+        gapCents: deficit.gapCents,
+        neededCents: deficit.neededCents,
+        fixedPct: Math.round(b.fixedRatio * 100),
+      })
+    }
+    push('essentials_first', 95)
+  } else {
+    push('daily_cap', 90, { dailyCents: b.dailyCents })
   }
 
-  push('daily_cap', 90, { dailyCents: b.dailyCents })
-
-  if (variable) {
+  if (variable && !deficit) {
     push('variable_floor', 80, {
       planningCents: b.planningIncomeCents,
       percent: Math.round(VARIABLE_INCOME_FACTOR * 100),
@@ -339,22 +532,22 @@ function selectRules(p: Profile, b: Base): PlanRule[] {
     push('weekly_envelope', 70, { weeklyCents: b.weeklyCents })
   }
 
-  if (b.debt && p.goal === 'repay_debt') {
+  if (b.debt && p.goal === 'repay_debt' && !deficit) {
     push('debt_first', 85, { extraCents: b.debt.extraCents, monthlyCents: b.debt.monthlyCents })
   } else if (p.debtMonthlyCents > 0) {
     push('debt_minimum', 65, { monthlyCents: p.debtMonthlyCents })
   }
 
-  if (b.fixedRatio > 0.6 && b.marginCents > 0) {
+  if (b.fixedRatio > 0.6 && !deficit) {
     push('fixed_charges_high', 75, { fixedPct: Math.round(b.fixedRatio * 100) })
   }
 
-  if (p.problem === 'impulsive') {
+  if (p.problem === 'impulsive' && !deficit) {
     const threshold = Math.max(10000, roundTo(p.incomeCents * 0.02, 1000))
     push('impulse_24h', 72, { thresholdCents: threshold })
   }
 
-  if (p.problem === 'month_end') {
+  if (p.problem === 'month_end' && !deficit) {
     const midDay = ((p.payDay - 1 + 15) % 30) + 1
     push('month_end_half', 71, { halfCents: Math.floor(b.spendableCents / 2 / 100) * 100, day: midDay })
   }
@@ -373,7 +566,7 @@ function selectRules(p: Profile, b: Base): PlanRule[] {
     })
   }
 
-  if (p.daretMonthlyCents > 0) {
+  if (p.daretMonthlyCents > 0 && !deficit) {
     push('daret_keep', 40, { monthlyCents: p.daretMonthlyCents })
   }
 
@@ -382,7 +575,7 @@ function selectRules(p: Profile, b: Base): PlanRule[] {
     push('dependents_buffer', 55, { bufferCents: buffer, count: p.dependents })
   }
 
-  if (p.situation === 'student') {
+  if (p.situation === 'student' && !deficit) {
     push('student_cap', 58, { weeklyOutingsCents: floorTo((b.budgets.outings ?? 0) / 4, 100) })
   }
 
@@ -405,6 +598,18 @@ function selectRules(p: Profile, b: Base): PlanRule[] {
 function weekOne(p: Profile, b: Base): PlanAction[] {
   const variable = p.incomeKind === 'variable'
   const act = (day: number, id: ActionId, params: Params = {}): PlanAction => ({ day, id, params })
+
+  if (b.status === 'deficit') {
+    return [
+      act(1, 'apply_budgets'),
+      act(2, 'log_all'),
+      act(3, 'check_bills', { billsCents: p.charges.billsCents }),
+      act(4, 'negotiate'),
+      act(5, 'income_ideas'),
+      act(6, 'essentials_list'),
+      act(7, 'weekly_review'),
+    ]
+  }
 
   let day3: PlanAction
   if (variable) day3 = act(3, 'weekly_envelope', { weeklyCents: b.weeklyCents })

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { usePrefs } from '../../app/prefs'
 import type { Category, Expense } from '../../db/types'
 import { formatDayShort, relativeDay, todayISO } from '../../domain/dates'
-import { CategoryIcon } from '../categories/CategoryIcon'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { useCategoryLabel } from '../categories/hooks'
 
 interface ExpenseRowProps {

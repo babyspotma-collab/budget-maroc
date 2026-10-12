@@ -9,7 +9,7 @@ export function Fab({ className = '', ...rest }: ButtonHTMLAttributes<HTMLButton
       className={`flex size-14 items-center justify-center rounded-[1.1rem] bg-gold-500 text-ink shadow-(--shadow-fab) ring-1 ring-gold-700/25 transition-transform active:scale-95 ${className}`}
       {...rest}
     >
-      <PlusIcon width={28} height={28} strokeWidth={2.6} />
+      <PlusIcon width={28} />
     </button>
   )
 }

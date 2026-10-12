@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CloseIcon } from './icons'
 
 interface SheetProps {
   open: boolean
@@ -43,7 +44,7 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
             aria-label={t('common.close')}
             className="flex size-10 items-center justify-center rounded-full text-muted hover:bg-line/60"
           >
-            ✕
+            <CloseIcon width={20} />
           </button>
         </div>
         {children}

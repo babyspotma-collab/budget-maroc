@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { usePrefs } from '../../app/prefs'
 import { Button, Card, Field, PageHeader, ProgressBar, Sheet } from '../../components/ui'
+import { CategoryIcon } from '../../components/ui/CategoryIcon'
 
 /** Page de contrôle visuel (dev uniquement) : composants de base en FR/AR. */
 export function UiKitPage() {
@@ -25,7 +26,7 @@ export function UiKitPage() {
 
         <Card tone="accent">
           <div className="flex justify-between">
-            <span className="font-medium">🛒 Courses</span>
+            <span className="flex items-center gap-2 font-medium"><CategoryIcon category={{ key: 'groceries', icon: 'groceries', color: '#3c9d6f' }} size="sm" /> Courses</span>
             <span className="tabular-nums">{money(82000)} / {money(100000)}</span>
           </div>
           <div className="mt-3">

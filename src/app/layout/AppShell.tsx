@@ -15,7 +15,7 @@ export function AppShell() {
   return (
     <QuickAddContext.Provider value={quickAdd}>
       <div className="mx-auto flex min-h-dvh max-w-md flex-col">
-        <main key={pathname} className="page-enter flex-1 px-4 pb-36 pt-6">
+        <main key={pathname} className="page-enter flex-1 px-5 pb-32 pt-6">
           <Outlet />
         </main>
 

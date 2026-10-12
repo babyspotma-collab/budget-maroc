@@ -95,11 +95,11 @@ export function StatsPage() {
       <PageHeader title={t('stats.title')} />
       <MonthSwitcher month={month} onChange={setMonth} />
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         {/* Chiffre clé + indicateurs */}
         <Card>
           <p className="text-sm font-medium text-muted">{t('stats.total')}</p>
-          <p className="mt-1 text-4xl font-extrabold leading-tight">{money(stats.totalCents)}</p>
+          <p className="font-display mt-1 text-[44px] font-extrabold leading-tight">{money(stats.totalCents)}</p>
           {changeText && (
             <p className="mt-1 text-sm text-muted">
               {change !== 0 && (

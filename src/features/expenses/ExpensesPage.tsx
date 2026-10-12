@@ -66,7 +66,7 @@ export function ExpensesPage() {
         </EmptyState>
       )}
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         {groups.map((g) => (
           <section key={g.date}>
             <div className="mb-1.5 flex items-baseline justify-between px-1">

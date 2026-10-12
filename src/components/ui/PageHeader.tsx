@@ -8,10 +8,10 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
-    <header className="mb-5 flex items-end justify-between gap-3 pt-2">
+    <header className="mb-6 flex items-end justify-between gap-3 pt-2">
       <div className="min-w-0">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tight">{title}</h1>
-        {subtitle && <p className="mt-0.5 text-sm text-muted first-letter:uppercase">{subtitle}</p>}
+        <h1 className="text-[28px] font-bold leading-tight">{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-muted first-letter:uppercase">{subtitle}</p>}
       </div>
       {action}
     </header>

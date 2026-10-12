@@ -39,11 +39,11 @@ export function AmountScreen({ fields, values, onChange, error }: AmountScreenPr
     <div className="flex flex-col gap-4">
       {single ? (
         <div
-          className={`flex items-baseline justify-center gap-2 rounded-3xl bg-surface py-6 shadow-(--shadow-card) ${
+          className={`flex items-baseline justify-center gap-2 rounded-(--radius-card) bg-surface py-6 shadow-(--shadow-card) ${
             error ? 'ring-2 ring-danger-600' : ''
           }`}
         >
-          <span className="min-h-12 text-5xl font-extrabold tabular-nums" dir="ltr">
+          <span className="font-display min-h-12 text-[44px] font-extrabold tabular-nums" dir="ltr">
             {formatTyped(values[fields[0].key]) || (
               <span className="text-line-strong">0</span>
             )}

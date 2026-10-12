@@ -65,7 +65,7 @@ function DeficitSection({
   return (
     <>
       <section
-        className="rounded-3xl bg-linear-to-br from-danger-600 to-[#8f2415] p-6 text-white shadow-(--shadow-card)"
+        className="rounded-(--radius-card) bg-danger-600 p-6 text-white"
         aria-label={title}
       >
         <CategoryIcon
@@ -175,7 +175,7 @@ export function ProgramPage() {
         subtitle={t('plan.nextPay', { date: formatDateFull(nextPayDate(profile.payDay), locale) })}
       />
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         {deficit && plan.deficit ? (
           <DeficitSection
             deficit={plan.deficit}
@@ -187,24 +187,24 @@ export function ProgramPage() {
         ) : (
           /* Carte principale : budget du jour (jamais affiché à 0) */
           <section
-            className="rounded-3xl bg-linear-to-br from-brand-500 to-brand-700 p-6 text-white shadow-(--shadow-card)"
+            className="rounded-(--radius-card) border-s-[6px] border-gold-500 bg-sand-deep p-6"
             aria-label={t('plan.dailyTitle')}
           >
-            <p className="text-sm font-medium text-white/85">{t('plan.dailyTitle')}</p>
-            <p className="mt-1 text-5xl font-extrabold leading-tight">{money(plan.dailyCents)}</p>
+            <p className="text-sm font-medium text-muted">{t('plan.dailyTitle')}</p>
+            <p className="font-display mt-1 text-[44px] font-extrabold leading-tight">{money(plan.dailyCents)}</p>
             <p className="text-lg font-semibold">{t('plan.dailyPer')}</p>
-            <p className="mt-3 text-sm text-white/85">{t('plan.dailyHint')}</p>
-            <p className="mt-1 text-sm font-medium text-white/95">
+            <p className="mt-3 text-sm text-muted">{t('plan.dailyHint')}</p>
+            <p className="mt-1 text-sm font-semibold">
               {t('plan.weekly', { amount: money(plan.weeklyCents) })}
             </p>
             {tight && (
-              <p className="mt-3 flex items-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-xs font-medium">
-                <CategoryIcon name="fixed_charges_high" tone="plain" px={18} iconColor="#fff" />
+              <p className="mt-3 flex items-center gap-2 rounded-[14px] bg-saffron-50 px-3 py-2 text-xs font-medium text-saffron-700">
+                <CategoryIcon name="fixed_charges_high" tone="plain" px={18} iconColor="#8a5a00" />
                 {t('plan.tight')}
               </p>
             )}
             {profile.incomeKind === 'variable' && (
-              <p className="mt-3 rounded-xl bg-white/15 px-3 py-2 text-xs">
+              <p className="mt-3 rounded-[14px] bg-ink/5 px-3 py-2 text-xs text-muted">
                 {t('plan.variableNote', { percent: num(Math.round(VARIABLE_INCOME_FACTOR * 100)) })}
               </p>
             )}

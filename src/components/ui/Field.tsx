@@ -32,7 +32,7 @@ export function Field({
         {label}
       </label>
       <div
-        className={`flex items-center rounded-xl border bg-surface px-4 transition-colors focus-within:border-accent-600 focus-within:ring-2 focus-within:ring-accent-600/25 ${
+        className={`flex items-center rounded-[14px] border bg-surface px-4 transition-colors focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/25 ${
           error ? 'border-danger-600' : 'border-line-strong'
         }`}
       >
@@ -42,7 +42,7 @@ export function Field({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={`w-full min-w-0 bg-transparent py-3 outline-none placeholder:text-muted/60 ${
-            amount ? 'font-display text-3xl font-semibold tabular-nums' : 'text-base'
+            amount ? 'font-display text-3xl font-bold tabular-nums' : 'text-base'
           }`}
           {...rest}
         />

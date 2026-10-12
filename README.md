@@ -59,6 +59,10 @@ src/
 └─ i18n/         traductions fr.json / ar.json
 ```
 
+Design « Le carnet bleu » : papier sable, encre bleu nuit, bleu Chaouen (actions), ocre (« aujourd'hui », bouton « + »),
+terre cuite (dépassement) et sauge (épargne) ; Bricolage Grotesque + Figtree (Readex Pro en arabe) ; grille de 4 px.
+Les jetons de couleur, de police et de forme vivent dans `src/styles/index.css`.
+
 Icônes : un seul composant, `<CategoryIcon />` (`src/components/ui/CategoryIcon.tsx`), regroupe le registre
 d'icônes Phosphor (duotone), la forme des badges (carré arrondi teinté) et l'inversion RTL des icônes
 directionnelles : changer de style se fait à cet endroit.

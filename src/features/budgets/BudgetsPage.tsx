@@ -59,7 +59,7 @@ export function BudgetsPage() {
       <PageHeader title={t('budgets.title')} />
       <MonthSwitcher month={month} onChange={setMonth} />
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         <MonthOverviewCard month={month} spentCents={totalCents(expenses ?? [])} />
 
         {statuses.length === 0 && (

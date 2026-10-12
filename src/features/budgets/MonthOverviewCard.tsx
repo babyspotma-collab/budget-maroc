@@ -6,9 +6,9 @@ import { remainingCents, spentRatio } from '../../domain/expenses'
 import { useMonthIncome } from '../expenses/hooks'
 import { IncomeSheet } from '../income/IncomeSheet'
 
-const RING_OK = '#0c7d5e'
-const RING_WARN = '#e9b949'
-const RING_OVER = '#c2321f'
+const RING_OK = '#4e8f6f'
+const RING_WARN = '#e9a23b'
+const RING_OVER = '#b9452f'
 
 interface MonthOverviewCardProps {
   month: string

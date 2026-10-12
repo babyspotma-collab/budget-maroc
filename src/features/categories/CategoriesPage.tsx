@@ -56,7 +56,7 @@ export function CategoriesPage() {
         action={<Button onClick={() => open()}>{t('categories.addShort')}</Button>}
       />
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         <Card className="p-1.5">
           <ul className="divide-y divide-line/70">{visible.map(row)}</ul>
         </Card>

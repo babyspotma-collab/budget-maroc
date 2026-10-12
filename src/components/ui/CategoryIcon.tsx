@@ -95,8 +95,9 @@ interface Entry {
   directional?: boolean
 }
 
-const EMERALD = '#0c7d5e'
-const TEAL = '#0e7490'
+const EMERALD = '#4e8f6f' // sauge
+
+const TEAL = '#2b6cb0' // bleu Chaouen
 const GREEN = '#3c9d6f'
 const BLUE = '#3b82c4'
 const INDIGO = '#5b6fd6'

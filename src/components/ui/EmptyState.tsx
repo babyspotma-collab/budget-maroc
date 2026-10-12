@@ -12,10 +12,10 @@ export function EmptyState({ title, body, children }: EmptyStateProps) {
     <div className="flex flex-col items-center rounded-(--radius-card) bg-surface px-5 py-10 text-center shadow-(--shadow-card)">
       <div className="mb-5 flex size-28 items-center justify-center rounded-full bg-brand-50">
         <svg viewBox="0 0 64 64" width="64" height="64" fill="none" aria-hidden>
-          <circle cx="32" cy="32" r="22" stroke="#cbe6da" strokeWidth="9" />
+          <circle cx="32" cy="32" r="22" stroke="#cfe0f2" strokeWidth="9" />
           <path
             d="M32 10a22 22 0 0 1 20.9 15.2"
-            stroke="#0c7d5e"
+            stroke="#2b6cb0"
             strokeWidth="9"
             strokeLinecap="round"
           />

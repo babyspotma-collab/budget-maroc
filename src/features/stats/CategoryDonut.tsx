@@ -5,7 +5,7 @@ import { usePrefs } from '../../app/prefs'
 import type { Category } from '../../db/types'
 import type { Slice } from '../../domain/stats'
 
-const OTHERS_COLOR = '#8a948d'
+const OTHERS_COLOR = '#8a93a6'
 const SURFACE = '#ffffff'
 
 interface CategoryDonutProps {

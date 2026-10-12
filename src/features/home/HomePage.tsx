@@ -102,40 +102,48 @@ export function HomePage() {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Grande carte : ce qu'il me reste aujourd'hui */}
+      {/* Grande carte : ce qu'il me reste aujourd'hui (fond sable foncé, marge ocre) */}
       <section
-        className={`rounded-3xl p-5 text-white shadow-(--shadow-card) ${
+        className={`rounded-(--radius-card) border-s-[6px] p-5 ${
           gauge.over
-            ? 'bg-linear-to-br from-danger-600 to-[#8f2415]'
-            : 'bg-linear-to-br from-brand-500 to-brand-700'
+            ? 'border-danger-600 bg-danger-50'
+            : 'border-gold-500 bg-sand-deep'
         }`}
         aria-label={headline}
       >
-        <p className="flex items-center gap-2 text-sm font-medium text-white/85">
-          <CategoryIcon name="greeting" tone="solid" color="#ffffff" iconColor="#0a6a50" size="xs" />
+        <p className="flex items-center gap-2 text-sm font-medium text-muted">
+          <CategoryIcon name="greeting" size="xs" />
           {name ? t('home.greetingName', { name }) : t('home.greeting')}
         </p>
-        <h1 className="mt-3 text-3xl font-extrabold leading-tight">{headline}</h1>
+        <h1
+          className={`mt-4 text-[32px] font-extrabold leading-[1.1] [text-wrap:balance] ${gauge.over ? 'text-danger-600' : ''}`}
+        >
+          {headline}
+        </h1>
 
         {incomeCents !== undefined && (
           <>
+            {/* Règle graduée : une graduation tous les 10 % du revenu */}
             <div
               role="progressbar"
               aria-label={t('home.monthSpent', { pct: num(pct) })}
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={pct}
-              className="mt-4 h-2 overflow-hidden rounded-full bg-black/20"
+              className="relative mt-5 h-3 overflow-hidden rounded-full bg-ink/10"
             >
               <div
-                className="h-full rounded-full bg-white transition-[width] duration-300 ease-out"
+                className={`h-full rounded-full transition-[width] duration-300 ease-out ${
+                  gauge.over ? 'bg-danger-600' : 'bg-brand-500'
+                }`}
                 style={{ width: `${pct}%` }}
               />
+              <div aria-hidden className="ruler pointer-events-none absolute inset-0" />
             </div>
-            <p className="mt-2 flex flex-wrap items-center justify-between gap-x-3 text-xs text-white/85">
+            <p className="mt-3 flex flex-wrap items-center justify-between gap-x-3 text-sm text-muted">
               <span>{t('home.monthSpent', { pct: num(pct) })}</span>
               {remainingMonth !== undefined && gauge.kind === 'today' && (
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-ink">
                   {t('home.leftToLive', { amount: money(remainingMonth) })}
                 </span>
               )}
@@ -143,12 +151,14 @@ export function HomePage() {
           </>
         )}
         {plan?.status === 'deficit' && (
-          <Link to="/programme" className="mt-3 block text-xs font-semibold underline">
+          <Link
+            to="/programme"
+            className="mt-3 block text-sm font-semibold text-danger-600 underline underline-offset-2"
+          >
             {t('home.deficitHint')}
           </Link>
         )}
       </section>
-
       {/* Une seule règle du jour, tirée du programme */}
       {rule ? (
         <Link to="/programme" className="block">

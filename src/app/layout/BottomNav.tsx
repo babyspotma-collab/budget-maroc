@@ -9,26 +9,26 @@ const TABS: { to: string; key: string; icon: IconName; end: boolean }[] = [
   { to: '/more', key: 'more', icon: 'nav_more', end: false },
 ]
 
-const GOLD = '#e9b949'
-const INK = '#10231c'
-
-/** Barre sombre flottante : chaque onglet est un badge en étoile (plein et doré si actif). */
+/**
+ * Barre claire collée au bas de l'écran (zone sûre de l'iPhone comprise) :
+ * onglet actif en bleu, avec un petit point ocre.
+ */
 export function BottomNav() {
   const { t } = useTranslation()
   return (
     <nav
       aria-label={t('nav.label')}
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)]"
     >
-      <div className="pointer-events-auto mx-auto grid max-w-md grid-cols-4 gap-1 rounded-[1.75rem] bg-ink p-1.5 shadow-[0_18px_30px_-14px_rgb(16_35_28/0.55)]">
+      <div className="mx-auto grid max-w-md grid-cols-4">
         {TABS.map((tab) => (
           <NavLink
             key={tab.to}
             to={tab.to}
             end={tab.end}
             className={({ isActive }) =>
-              `flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-[1.25rem] text-[11px] font-medium transition-colors ${
-                isActive ? 'text-gold-300' : 'text-white/70'
+              `relative flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition-colors duration-200 ${
+                isActive ? 'text-brand-500' : 'text-muted'
               }`
             }
           >
@@ -36,12 +36,17 @@ export function BottomNav() {
               <>
                 <CategoryIcon
                   name={tab.icon}
-                  size="xs"
-                  tone={isActive ? 'solid' : 'ghost'}
-                  color={isActive ? GOLD : '#ffffff'}
-                  iconColor={isActive ? INK : 'rgba(255,255,255,0.85)'}
+                  tone="plain"
+                  px={26}
+                  weight={isActive ? 'fill' : 'duotone'}
                 />
                 {t(`nav.${tab.key}`)}
+                <span
+                  aria-hidden
+                  className={`absolute bottom-1.5 size-1 rounded-full bg-gold-500 transition-opacity duration-200 ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
               </>
             )}
           </NavLink>

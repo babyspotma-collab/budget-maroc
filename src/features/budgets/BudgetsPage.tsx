@@ -5,12 +5,13 @@ import { Card, PageHeader, ProgressBar } from '../../components/ui'
 import type { Category } from '../../db/types'
 import { alertsOf, summarize, type BudgetStatus } from '../../domain/budget'
 import { currentMonth } from '../../domain/dates'
-import { totalsByCategory } from '../../domain/expenses'
+import { totalCents, totalsByCategory } from '../../domain/expenses'
 import { CategoryIcon } from '../../components/ui/CategoryIcon'
 import { useCategories, useCategoryLabel } from '../categories/hooks'
 import { useMonthExpenses } from '../expenses/hooks'
 import { MonthSwitcher } from '../expenses/MonthSwitcher'
 import { BudgetSheet } from './BudgetSheet'
+import { MonthOverviewCard } from './MonthOverviewCard'
 import { useBudgetStatuses, useMonthLimits } from './hooks'
 
 const LEVEL_TEXT: Record<BudgetStatus['level'], string> = {
@@ -59,6 +60,8 @@ export function BudgetsPage() {
       <MonthSwitcher month={month} onChange={setMonth} />
 
       <div className="space-y-5">
+        <MonthOverviewCard month={month} spentCents={totalCents(expenses ?? [])} />
+
         {statuses.length === 0 && (
           <Card tone="accent">
             <p className="text-sm text-muted">{t('budgets.intro')}</p>

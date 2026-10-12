@@ -5,7 +5,12 @@ import { useToast } from '../../app/toast'
 import type { Lang, Numerals } from '../../domain/money'
 import { Button, Card, PageHeader } from '../../components/ui'
 import { ChevronRightIcon } from '../../components/ui/icons'
-import { clearDemoData, loadDemoData } from '../demo/actions'
+import {
+  clearDemoData,
+  loadDemoData,
+  restoreDemoData,
+  snapshotDemoData,
+} from '../demo/actions'
 
 function Segmented<T extends string>({
   value,
@@ -118,8 +123,16 @@ export function MorePage() {
                 variant="danger"
                 block
                 onClick={async () => {
+                  const snapshot = await snapshotDemoData()
                   const n = await clearDemoData()
-                  toast.show(n > 0 ? t('more.demoCleared', { count: num(n) }) : t('more.demoNone'))
+                  if (n > 0) {
+                    toast.show(t('more.demoCleared', { count: num(n) }), {
+                      actionLabel: t('common.undo'),
+                      onAction: () => void restoreDemoData(snapshot),
+                    })
+                  } else {
+                    toast.show(t('more.demoNone'))
+                  }
                 }}
               >
                 {t('more.clearDemo')}

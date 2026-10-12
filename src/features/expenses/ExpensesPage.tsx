@@ -13,16 +13,19 @@ import {
 } from '../../domain/dates'
 import { groupByDay, totalCents } from '../../domain/expenses'
 import { useCategoryMap } from '../categories/hooks'
+import { SwipeToDelete } from '../../components/ui/SwipeToDelete'
 import { ExpenseRow } from './ExpenseRow'
 import { ExpenseSheet } from './ExpenseSheet'
 import { useMonthExpenses } from './hooks'
 import { MonthSwitcher } from './MonthSwitcher'
+import { useDeleteExpense } from './useDeleteExpense'
 
 export function ExpensesPage() {
   const { t } = useTranslation()
   const { money, locale } = usePrefs()
   const { openAdd } = useQuickAdd()
   const categories = useCategoryMap()
+  const removeExpense = useDeleteExpense()
 
   const [month, setMonth] = useState(currentMonth())
   const [editing, setEditing] = useState<Expense | undefined>()
@@ -76,11 +79,13 @@ export function ExpensesPage() {
               <ul>
                 {g.items.map((e) => (
                   <li key={e.id}>
-                    <ExpenseRow
-                      expense={e}
-                      category={categories.get(e.categoryId)}
-                      onClick={() => setEditing(e)}
-                    />
+                    <SwipeToDelete onDelete={() => void removeExpense(e)}>
+                      <ExpenseRow
+                        expense={e}
+                        category={categories.get(e.categoryId)}
+                        onClick={() => setEditing(e)}
+                      />
+                    </SwipeToDelete>
                   </li>
                 ))}
               </ul>

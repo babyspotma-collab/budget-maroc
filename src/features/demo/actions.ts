@@ -1,4 +1,5 @@
 import { db } from '../../db/database'
+import type { Budget, Expense, MonthlyIncome } from '../../db/types'
 import { currentMonth } from '../../domain/dates'
 import { DEMO_BUDGETS_MAD, generateDemo } from '../../domain/demo'
 
@@ -45,5 +46,29 @@ export async function clearDemoData(): Promise<number> {
     const incomes = await db.monthlyIncomes.filter((i) => i.demo === true).delete()
     const budgets = await db.budgets.filter((b) => b.demo === true).delete()
     return expenses + incomes + budgets
+  })
+}
+
+export interface DemoSnapshot {
+  expenses: Expense[]
+  incomes: MonthlyIncome[]
+  budgets: Budget[]
+}
+
+/** Photographie des données de démo, avant effacement, pour permettre « Annuler ». */
+export async function snapshotDemoData(): Promise<DemoSnapshot> {
+  return {
+    expenses: await db.expenses.filter((e) => e.demo === true).toArray(),
+    incomes: await db.monthlyIncomes.filter((i) => i.demo === true).toArray(),
+    budgets: await db.budgets.filter((b) => b.demo === true).toArray(),
+  }
+}
+
+/** Remet en place les données de démo effacées. */
+export async function restoreDemoData(snapshot: DemoSnapshot): Promise<void> {
+  await db.transaction('rw', db.expenses, db.monthlyIncomes, db.budgets, async () => {
+    await db.expenses.bulkPut(snapshot.expenses)
+    await db.monthlyIncomes.bulkPut(snapshot.incomes)
+    await db.budgets.bulkPut(snapshot.budgets)
   })
 }

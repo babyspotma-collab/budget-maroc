@@ -86,12 +86,7 @@ body {
     transform: rotate(360deg);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .making-spin,
-  .making-fade {
-    animation: none;
-  }
-}
+
 
 /* Feuille modale */
 dialog.sheet {
@@ -112,9 +107,56 @@ dialog.sheet::backdrop {
     opacity: 0;
   }
 }
+
+/* Transitions d'écrans : 200 à 300 ms, douces */
+.step-enter {
+  --step-dx: 28px;
+  animation: step-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.step-enter.step-back {
+  --step-dx: -28px;
+}
+[dir='rtl'] .step-enter {
+  --step-dx: -28px;
+}
+[dir='rtl'] .step-enter.step-back {
+  --step-dx: 28px;
+}
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--step-dx));
+  }
+}
+
+.page-enter {
+  animation: page-in 220ms ease-out both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.toast-enter {
+  animation: toast-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Respect de « réduire les animations » : tout devient instantané */
 @media (prefers-reduced-motion: reduce) {
-  dialog.sheet,
-  dialog.sheet::backdrop {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

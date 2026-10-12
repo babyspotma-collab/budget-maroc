@@ -34,7 +34,7 @@ export function isValidISODate(value: string): boolean {
   return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d
 }
 
-function dayNumber(iso: string): number {
+export function dayNumber(iso: string): number {
   const [y, m, d] = iso.split('-').map(Number)
   return Math.round(Date.UTC(y, m - 1, d) / 86_400_000)
 }

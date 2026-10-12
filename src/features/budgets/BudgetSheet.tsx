@@ -50,9 +50,14 @@ export function BudgetSheet({ open, onClose, category, month, currentCents }: Bu
 
   async function remove() {
     if (category?.id === undefined) return
-    await setBudget(category.id, month, 0)
+    const id = category.id
+    const previous = currentCents
+    await setBudget(id, month, 0)
     onClose()
-    toast.show(t('budgets.removed'))
+    toast.show(t('budgets.removed'), {
+      actionLabel: t('common.undo'),
+      onAction: () => void setBudget(id, month, previous),
+    })
   }
 
   return (

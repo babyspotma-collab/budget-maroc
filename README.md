@@ -26,7 +26,8 @@ L'application est servie sur http://localhost:5173.
 
 ## Fonctions
 
-- **Programme personnalisé** : questionnaire de 10 questions, puis budget par catégorie, budget du jour,
+- **Accueil minimal** : « il te reste X aujourd'hui », une règle du jour, les 3 dernières dépenses.
+- **Programme personnalisé** : questionnaire guidé (un écran par question, récapitulatif modifiable), puis budget par catégorie, budget du jour,
   objectif d'épargne daté, 3 à 5 règles adaptées au profil et plan de la première semaine.
   Le moteur de règles (src/domain/plan.ts) est pur et testé ; « Appliquer » crée les budgets.
 - **Ajout rapide en 2 clics** : « + », montant, puis un clic sur la catégorie. Annulation possible.

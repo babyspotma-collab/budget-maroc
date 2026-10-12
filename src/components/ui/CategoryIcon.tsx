@@ -11,6 +11,8 @@ import { Airplane } from '@phosphor-icons/react/dist/csr/Airplane'
 import { ArrowDown } from '@phosphor-icons/react/dist/csr/ArrowDown'
 import { ArrowUp } from '@phosphor-icons/react/dist/csr/ArrowUp'
 import { Baby } from '@phosphor-icons/react/dist/csr/Baby'
+import { Backspace } from '@phosphor-icons/react/dist/csr/Backspace'
+import { Trash } from '@phosphor-icons/react/dist/csr/Trash'
 import { Barbell } from '@phosphor-icons/react/dist/csr/Barbell'
 import { Basket } from '@phosphor-icons/react/dist/csr/Basket'
 import { Books } from '@phosphor-icons/react/dist/csr/Books'
@@ -209,6 +211,10 @@ const REGISTRY = {
   hide: { Icon: EyeSlash, color: SLATE },
   check: { Icon: Check, color: EMERALD },
   close: { Icon: X, color: SLATE },
+  backspace: { Icon: Backspace, color: SLATE },
+  trash: { Icon: Trash, color: RED },
+  answer_yes: { Icon: Check, color: EMERALD },
+  answer_no: { Icon: X, color: SLATE },
   arrow_up: { Icon: ArrowUp, color: RED },
   arrow_down: { Icon: ArrowDown, color: EMERALD },
   chevron_left: { Icon: CaretLeft, color: SLATE, directional: true },

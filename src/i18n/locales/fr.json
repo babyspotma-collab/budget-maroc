@@ -41,7 +41,20 @@
     "emptyTitle": "Votre mois est encore vierge",
     "emptyBody": "Ajoutez votre première dépense en deux touches : le montant, puis la catégorie.",
     "emptyCta": "Ajouter une dépense",
-    "emptyDemo": "Essayer avec des données de démo"
+    "emptyDemo": "Essayer avec des données de démo",
+    "todayLeft": "Il te reste {{amount}} aujourd’hui",
+    "todayOver": "Tu as dépassé de {{amount}} aujourd’hui",
+    "monthLeft": "Il te reste {{amount}} ce mois-ci",
+    "monthOver": "Tu as dépassé de {{amount}} ce mois-ci",
+    "spentToday": "Dépensé aujourd’hui",
+    "leftToLive": "Reste à vivre : {{amount}}",
+    "monthSpent": "{{pct}} % du mois dépensé",
+    "ruleTitle": "Ta règle du jour",
+    "noProgramRule": "Crée ton programme pour recevoir une règle chaque jour.",
+    "lastThree": "Dernières dépenses",
+    "noExpenses": "Aucune dépense pour l’instant. Touche « + » pour commencer.",
+    "seeProgram": "Voir mon programme",
+    "deficitHint": "Ton budget du jour est en pause : voir les conseils du programme."
   },
   "add": {
     "title": "Nouvelle dépense",
@@ -167,81 +180,126 @@
     "next": "Continuer",
     "back": "Retour",
     "later": "Plus tard",
+    "skip": "Passer",
+    "unsure": "Je ne sais pas exactement",
+    "useKeypad": "Revenir au clavier",
+    "keypad": "Clavier numérique",
+    "erase": "Effacer",
     "finish": "Créer mon programme",
     "progress": "Question {{n}} sur {{total}}",
+    "progressLabel": "Avancement du questionnaire",
     "q": {
       "name": {
         "title": "Comment t'appelles-tu ?",
-        "hint": "Pour personnaliser ton programme.",
+        "why": "Pour que le programme soit vraiment à ton nom.",
         "placeholder": "Ton prénom"
       },
+      "goal": {
+        "title": "Qu’est-ce qui compte le plus pour toi ?",
+        "why": "Tout le programme est construit autour de ça.",
+        "finish_month": "Finir le mois sans stress",
+        "save": "Mettre de l’argent de côté",
+        "repay_debt": "Rembourser une dette",
+        "project": "Réaliser un projet",
+        "understand": "Comprendre où part mon argent"
+      },
       "situation": {
-        "title": "Quelle est ta situation ?",
-        "employee": "Salarié(e)",
-        "self_employed": "Indépendant(e)",
-        "merchant": "Commerçant(e)",
-        "student": "Étudiant(e)",
-        "unemployed": "Sans emploi"
+        "title": "Que fais-tu dans la vie ?",
+        "why": "Un salarié, un commerçant et un étudiant n’ont pas les mêmes besoins.",
+        "employee": "Je suis salarié(e)",
+        "self_employed": "Je travaille à mon compte",
+        "merchant": "Je suis commerçant(e)",
+        "student": "Je suis étudiant(e)",
+        "unemployed": "Je n’ai pas d’emploi"
       },
       "income": {
-        "title": "Quel est ton revenu mensuel net ?",
-        "hint": "Ce qui arrive vraiment dans ta poche chaque mois (en moyenne si ça varie).",
-        "label": "Revenu mensuel net"
+        "title": "Combien gagnes-tu par mois ?",
+        "why": "Net, c’est ce qui arrive vraiment dans ta poche. Une moyenne suffit.",
+        "label": "Revenu par mois"
       },
       "incomeKind": {
-        "title": "Ton revenu est-il régulier ?",
-        "regular": "Régulier",
-        "regularHint": "À peu près le même montant chaque mois",
-        "variable": "Variable",
-        "variableHint": "Il change beaucoup selon les mois"
+        "title": "Est-ce que ça change d’un mois à l’autre ?",
+        "why": "Si oui, on reste prudent : on compte sur 70 % de ton revenu.",
+        "regular": "Non, c’est à peu près pareil",
+        "regularHint": "Salaire fixe, par exemple",
+        "regularShort": "Régulier",
+        "variable": "Oui, ça varie beaucoup",
+        "variableHint": "Selon les ventes, les missions…",
+        "variableShort": "Variable"
       },
       "payDay": {
-        "title": "Quel jour reçois-tu ton argent ?",
-        "hint": "Le jour du mois où ton revenu arrive (le plus fréquent si ça varie)."
+        "title": "Quel jour l’argent arrive-t-il ?",
+        "why": "Pour te rappeler de mettre de côté dès la paie."
       },
       "charges": {
         "title": "Quelles sont tes charges fixes ?",
-        "hint": "Montants par mois. Laisse vide ce qui ne te concerne pas.",
+        "why": "Ce que tu paies chaque mois quoi qu’il arrive. Touche une ligne, puis tape le montant.",
         "rent": "Loyer",
         "credit": "Crédit",
         "school": "École ou études",
         "bills": "Factures (eau, électricité, téléphone)",
         "transport": "Transport"
       },
+      "hasDebts": {
+        "title": "As-tu des dettes ou un daret à payer ?",
+        "why": "On les compte avant tout le reste, pour ne jamais les oublier.",
+        "yes": "Oui",
+        "no": "Non"
+      },
       "debts": {
-        "title": "Dettes et daret",
-        "hint": "Ce que tu rembourses et cotises chaque mois. Laisse vide si rien.",
-        "debtMonthly": "Remboursement de dettes par mois",
-        "debtTotal": "Total restant à rembourser (facultatif)",
-        "daret": "Cotisation de daret par mois"
+        "title": "Combien par mois ?",
+        "why": "Pour mettre cet argent de côté dès le début du mois.",
+        "debtMonthly": "Remboursement de dettes",
+        "debtTotal": "Total qu’il te reste à rembourser",
+        "daret": "Cotisation de daret"
       },
       "dependents": {
-        "title": "Combien de personnes sont à ta charge ?",
-        "hint": "Enfants, parents, conjoint(e)… sans te compter.",
+        "title": "Combien de personnes dépendent de toi ?",
+        "why": "Enfants, parents, conjoint(e)… sans te compter. Ça change les courses et la santé.",
         "none": "Aucune",
-        "more": "5 ou plus"
-      },
-      "goal": {
-        "title": "Quel est ton objectif principal ?",
-        "finish_month": "Finir le mois sans stress",
-        "save": "Épargner",
-        "repay_debt": "Rembourser une dette",
-        "project": "Financer un projet",
-        "understand": "Comprendre mes dépenses"
+        "more": "ou plus"
       },
       "problem": {
-        "title": "Quel est ton plus gros problème ?",
+        "title": "Qu’est-ce qui te pose le plus de problème ?",
+        "why": "On adapte les règles à ton plus gros point faible.",
         "impulsive": "Je dépense sans réfléchir",
         "month_end": "Les fins de mois sont difficiles",
-        "no_savings": "Je n'arrive pas à épargner",
+        "no_savings": "Je n’arrive pas à épargner",
         "no_tracking": "Je ne suis pas mes dépenses"
+      },
+      "recap": {
+        "title": "Voici ce que j’ai compris",
+        "why": "Touche une ligne pour la corriger. Sinon, on y va !"
       }
     },
+    "ranges": {
+      "below": "Moins de {{max}}",
+      "between": "De {{min}} à {{max}}",
+      "above": "Plus de {{min}}"
+    },
+    "recap": {
+      "name": "Prénom",
+      "goal": "Objectif",
+      "situation": "Situation",
+      "income": "Revenu",
+      "incomeKind": "Régularité",
+      "payDay": "Jour de paie",
+      "charges": "Charges fixes",
+      "debts": "Dettes et daret",
+      "dependents": "Personnes à charge",
+      "problem": "Plus gros problème",
+      "none": "Aucune",
+      "yes": "Oui",
+      "perMonth": "{{amount}} par mois",
+      "dayOfMonth": "Le {{day}} du mois",
+      "debt": "Dettes : {{amount}}",
+      "daret": "Daret : {{amount}}"
+    },
     "errors": {
-      "name": "Entre ton prénom.",
-      "choice": "Choisis une réponse pour continuer.",
-      "income": "Entre un montant supérieur à 0.",
-      "amount": "Un des montants est invalide."
+      "name": "Entre ton prénom pour continuer.",
+      "choice": "Touche une réponse pour continuer.",
+      "income": "Entre un montant supérieur à 0, ou choisis une fourchette.",
+      "amount": "Un des montants n’est pas valide."
     },
     "making": {
       "title": "On prépare ton programme",

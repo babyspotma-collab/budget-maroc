@@ -6,12 +6,20 @@ import { resolveLimits } from '../../domain/budget'
 import type { Profile } from '../../domain/plan'
 import { setBudget } from '../budgets/actions'
 import { setMonthlyIncome } from '../income/actions'
+import { parseMAD } from '../../domain/money'
 import {
+  AMOUNT_RANGES,
+  applyKey,
   draftToProfile,
   EMPTY_DRAFT,
+  formatTyped,
+  OPTIONAL_STEPS,
   profileToDraft,
-  STEPS,
+  rangeValue,
+  skipStep,
+  STEP_ORDER,
   stepError,
+  visibleSteps,
   type Draft,
 } from '../onboarding/draft'
 import { applyProgram, saveProgram, toggleWeekDay } from '../program/actions'
@@ -50,6 +58,7 @@ beforeEach(async () => {
 describe('questionnaire (brouillon → profil)', () => {
   const full: Draft = {
     firstName: '  Samira ',
+    goal: 'save',
     situation: 'employee',
     income: '8000',
     incomeKind: 'regular',
@@ -59,11 +68,11 @@ describe('questionnaire (brouillon → profil)', () => {
     school: '',
     bills: '400,5',
     transport: '300',
+    hasDebts: true,
     debtMonthly: '',
     debtTotal: '',
     daret: '500',
     dependents: 1,
-    goal: 'save',
     problem: 'no_savings',
   }
 
@@ -77,6 +86,36 @@ describe('questionnaire (brouillon → profil)', () => {
     expect(p.daretMonthlyCents).toBe(50000)
   })
 
+  it('suit l\'ordre voulu : prénom, objectif, situation, revenu, charges, dettes…', () => {
+    expect(STEP_ORDER).toEqual([
+      'name',
+      'goal',
+      'situation',
+      'income',
+      'incomeKind',
+      'payDay',
+      'charges',
+      'hasDebts',
+      'debts',
+      'dependents',
+      'problem',
+      'recap',
+    ])
+  })
+
+  it('ne demande les détails de dettes que si la réponse est « oui »', () => {
+    expect(visibleSteps({ ...full, hasDebts: true })).toContain('debts')
+    expect(visibleSteps({ ...full, hasDebts: false })).not.toContain('debts')
+    expect(visibleSteps({ ...full, hasDebts: null })).not.toContain('debts')
+    expect(visibleSteps(full).at(-1)).toBe('recap')
+  })
+
+  it('« non » aux dettes : les montants éventuels sont ignorés', () => {
+    const p = draftToProfile({ ...full, hasDebts: false, debtMonthly: '700', daret: '500' })!
+    expect(p.debtMonthlyCents).toBe(0)
+    expect(p.daretMonthlyCents).toBe(0)
+  })
+
   it('refuse un questionnaire incomplet ou invalide', () => {
     expect(draftToProfile(EMPTY_DRAFT)).toBeNull()
     expect(stepError('name', { ...full, firstName: '   ' })).toBe('name')
@@ -84,13 +123,34 @@ describe('questionnaire (brouillon → profil)', () => {
     expect(stepError('income', { ...full, income: 'abc' })).toBe('income')
     expect(stepError('charges', { ...full, rent: '12x' })).toBe('amount')
     expect(stepError('goal', { ...full, goal: null })).toBe('choice')
+    expect(stepError('hasDebts', { ...full, hasDebts: null })).toBe('choice')
     expect(draftToProfile({ ...full, payDay: null })).toBeNull()
+    expect(draftToProfile({ ...full, hasDebts: null })).toBeNull()
   })
 
-  it('les montants facultatifs vides valent 0 ; 10 questions', () => {
-    expect(STEPS).toHaveLength(10)
+  it('les montants facultatifs vides valent 0', () => {
     expect(stepError('debts', full)).toBeNull()
     expect(stepError('charges', { ...full, rent: '', bills: '', transport: '' })).toBeNull()
+  })
+
+  it('« Passer » ne bloque jamais sur une question facultative', () => {
+    let d: Draft = {
+      ...EMPTY_DRAFT,
+      firstName: 'Nadia',
+      goal: 'understand',
+      situation: 'student',
+      income: '3000',
+      incomeKind: 'regular',
+      payDay: 5,
+    }
+    expect(draftToProfile(d)).toBeNull() // questions facultatives non traitées
+    for (const s of OPTIONAL_STEPS) d = skipStep(s, d)
+    const p = draftToProfile(d)!
+    expect(p).not.toBeNull()
+    expect(p.dependents).toBe(0)
+    expect(p.problem).toBe('no_tracking')
+    expect(p.charges.rentCents).toBe(0)
+    expect(p.debtMonthlyCents).toBe(0)
   })
 
   it('accepte les chiffres arabes-indiens', () => {
@@ -101,10 +161,54 @@ describe('questionnaire (brouillon → profil)', () => {
 
   it('refait le chemin inverse pour « refaire le questionnaire »', () => {
     const d = profileToDraft(profile)
+    expect(d.hasDebts).toBe(true) // le profil de test a un daret
     expect(draftToProfile(d)).toEqual(profile)
   })
 })
 
+describe('clavier numérique et fourchettes', () => {
+  it('saisit des chiffres, une virgule et efface', () => {
+    let v = ''
+    for (const k of ['1', '2', '5', '0', '0']) v = applyKey(v, k)
+    expect(v).toBe('12500')
+    v = applyKey(v, 'back')
+    expect(v).toBe('1250')
+    expect(applyKey('', ',')).toBe('0,')
+    expect(applyKey('12,5', ',')).toBe('12,5') // une seule virgule
+    expect(applyKey('12,50', '7')).toBe('12,50') // deux décimales au plus
+    expect(applyKey('', 'back')).toBe('')
+  })
+
+  it('évite les zéros en tête et borne la longueur', () => {
+    expect(applyKey('0', '5')).toBe('5')
+    expect(applyKey('123456789', '1')).toBe('123456789')
+  })
+
+  it('formate l\'affichage avec des espaces insécables', () => {
+    expect(formatTyped('12500')).toBe('12 500')
+    expect(formatTyped('1250,5')).toBe('1 250,5')
+    expect(formatTyped('')).toBe('')
+  })
+
+  it('chaque fourchette donne un montant valide et croissant', () => {
+    for (const [key, ranges] of Object.entries(AMOUNT_RANGES)) {
+      const values = ranges.map(rangeValue)
+      for (const v of values) expect(v).toBeGreaterThan(0)
+      expect([...values].sort((a, b) => a - b), key).toEqual(values)
+      // la valeur retenue reste dans sa fourchette
+      ranges.forEach((r, i) => {
+        expect(values[i]).toBeGreaterThanOrEqual(r.min)
+        if (r.max !== null) expect(values[i]).toBeLessThanOrEqual(r.max)
+      })
+      expect(ranges.at(-1)!.max).toBeNull() // dernière fourchette ouverte : « plus de »
+    }
+  })
+
+  it('un montant issu d\'une fourchette est accepté par le questionnaire', () => {
+    const r = AMOUNT_RANGES.income[1]
+    expect(parseMAD(String(rangeValue(r)))).toBe(rangeValue(r) * 100)
+  })
+})
 describe('programme enregistré', () => {
   it('stocke le profil et le programme', async () => {
     const plan = await saveProgram(profile, NOW)

@@ -208,12 +208,12 @@ function variableWeights(p: Profile): Record<string, number> {
     health: 8,
     clothing: 7,
     family: 10,
-    other: 12,
+    other: 6, // fourre-tout : volontairement petit
   }
   if (p.situation === 'student') {
-    Object.assign(w, { groceries: 38, transport: 12, outings: 22, clothing: 5, family: 4, other: 12 })
+    Object.assign(w, { groceries: 38, transport: 12, outings: 22, clothing: 5, family: 4, other: 6 })
   }
-  if (p.situation === 'self_employed' || p.situation === 'merchant') w.other += 4
+  if (p.situation === 'self_employed' || p.situation === 'merchant') w.other += 2
   if (p.situation === 'unemployed') w.outings *= 0.6
 
   const d = clamp(p.dependents, 0, 8)
@@ -325,7 +325,7 @@ export function generatePlan(profile: Profile, now: Date = new Date()): Plan {
   add('utilities', utilities)
   add('phone', c.billsCents - utilities)
   add('transport', c.transportCents)
-  add('other', c.creditCents)
+  add('credit', c.creditCents)
   for (const [key, v] of Object.entries(variableBudgets)) add(key, v)
 
   // --- Budget journalier -------------------------------------------------------

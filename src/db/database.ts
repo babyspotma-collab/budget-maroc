@@ -1,4 +1,4 @@
-import Dexie, { type EntityTable } from 'dexie'
+import Dexie, { type EntityTable, type Transaction } from 'dexie'
 import { generatePlan } from '../domain/plan'
 import { DEFAULT_CATEGORIES } from './seed'
 import type {
@@ -38,6 +38,15 @@ export const SCHEMA_V2 = {
   program: 'id',
 }
 
+/** Recalcule le programme enregistré avec le moteur actuel (progression conservée). */
+async function regenerateProgram(tx: Transaction): Promise<void> {
+  const stored = await tx.table('profile').get(1)
+  const program = await tx.table('program').get(1)
+  if (!stored || !program) return
+  const plan = generatePlan(stored.profile, new Date(program.generatedAt))
+  await tx.table('program').put({ ...program, plan })
+}
+
 export class BudgetDB extends Dexie {
   categories!: EntityTable<Category, 'id'>
   expenses!: EntityTable<Expense, 'id'>
@@ -63,12 +72,20 @@ export class BudgetDB extends Dexie {
     // programme enregistré à partir du profil, en gardant la progression et l'application.
     this.version(3)
       .stores({})
+      .upgrade((tx) => regenerateProgram(tx))
+
+    // v4 : catégorie « Crédit » (les mensualités n'étaient plus noyées dans « Autres »)
+    // et nouvelle répartition des budgets.
+    this.version(4)
+      .stores({})
       .upgrade(async (tx) => {
-        const stored = await tx.table('profile').get(1)
-        const program = await tx.table('program').get(1)
-        if (!stored || !program) return
-        const plan = generatePlan(stored.profile, new Date(program.generatedAt))
-        await tx.table('program').put({ ...program, plan })
+        const categories = tx.table('categories')
+        if (!(await categories.where('key').equals('credit').first())) {
+          const all = await categories.toArray()
+          const order = all.reduce((max, c) => Math.max(max, c.order ?? 0), 0) + 1
+          await categories.add({ key: 'credit', icon: 'credit', color: '#6b7cc9', order })
+        }
+        await regenerateProgram(tx)
       })
     this.on('populate', (tx) => {
       tx.table('categories').bulkAdd(DEFAULT_CATEGORIES)

@@ -3,7 +3,7 @@
  *
  * Tout passe par ici pour pouvoir changer de style en un seul endroit :
  *  - la famille d'icônes (Phosphor, variante `duotone`) est choisie dans `ICON_WEIGHT` ;
- *  - la forme du badge (étoile à 8 branches, losange arrondi ou cercle) dans `BADGE_SHAPE` ;
+ *  - la forme du badge (carré arrondi ou cercle) dans `BADGE_SHAPE` ;
  *  - les couleurs par défaut et le sens (icônes directionnelles inversées en RTL) dans `REGISTRY`.
  */
 import type { Icon as PhosphorIcon, IconWeight } from '@phosphor-icons/react'
@@ -27,6 +27,7 @@ import { ChartLineUp } from '@phosphor-icons/react/dist/csr/ChartLineUp'
 import { Check } from '@phosphor-icons/react/dist/csr/Check'
 import { Coffee } from '@phosphor-icons/react/dist/csr/Coffee'
 import { Coins } from '@phosphor-icons/react/dist/csr/Coins'
+import { CreditCard } from '@phosphor-icons/react/dist/csr/CreditCard'
 import { CookingPot } from '@phosphor-icons/react/dist/csr/CookingPot'
 import { DeviceMobile } from '@phosphor-icons/react/dist/csr/DeviceMobile'
 import { Envelope } from '@phosphor-icons/react/dist/csr/Envelope'
@@ -80,9 +81,9 @@ import { X } from '@phosphor-icons/react/dist/csr/X'
 /** Variante des icônes Phosphor (duotone = deux tons, cohérent avec les badges teintés). */
 const ICON_WEIGHT: IconWeight = 'duotone'
 
-export type BadgeShape = 'star' | 'diamond' | 'circle'
+export type BadgeShape = 'square' | 'circle'
 /** Forme des badges : change ici pour modifier toute l'application. */
-export const BADGE_SHAPE: BadgeShape = 'star'
+export const BADGE_SHAPE: BadgeShape = 'square'
 
 interface Entry {
   Icon: PhosphorIcon
@@ -116,6 +117,7 @@ const REGISTRY = {
   education: { Icon: GraduationCap, color: INDIGO },
   clothing: { Icon: TShirt, color: PINK },
   family: { Icon: UsersThree, color: '#1f9e8f' },
+  credit: { Icon: CreditCard, color: '#6b7cc9' },
   other: { Icon: Package, color: SLATE },
   // --- Icônes supplémentaires pour les catégories personnalisées ---------------
   coffee: { Icon: Coffee, color: '#8a5a2b' },
@@ -218,7 +220,7 @@ export type IconName = keyof typeof REGISTRY
 /** Icônes proposées quand on crée ou modifie une catégorie. */
 export const PICKABLE_CATEGORY_ICONS: IconName[] = [
   'groceries', 'transport', 'rent', 'phone', 'outings', 'utilities', 'health', 'education',
-  'clothing', 'family', 'other', 'coffee', 'film', 'plane', 'gift', 'scissors',
+  'clothing', 'family', 'credit', 'other', 'coffee', 'film', 'plane', 'gift', 'scissors',
   'fuel', 'wrench', 'books', 'paw', 'mosque', 'barbell', 'receipt', 'piggy',
   'heart', 'car', 'baby',
 ]
@@ -249,23 +251,6 @@ export function iconNameForCategory(c: { key?: string; icon?: string }): IconNam
 const PX = { xs: 30, sm: 38, md: 46, lg: 58 } as const
 export type IconSize = keyof typeof PX
 
-/** Étoile à 8 branches (deux carrés superposés, pointes arrondies par le trait). */
-function starPath(outer = 22.5, inner = 17.2): string {
-  const pts: string[] = []
-  for (let i = 0; i < 16; i++) {
-    const r = i % 2 === 0 ? outer : inner
-    const a = (Math.PI / 8) * i - Math.PI / 2
-    pts.push(`${(24 + r * Math.cos(a)).toFixed(2)} ${(24 + r * Math.sin(a)).toFixed(2)}`)
-  }
-  return `M${pts.join('L')}Z`
-}
-
-const SHAPES: Record<BadgeShape, string> = {
-  star: starPath(),
-  diamond: 'M24 3.5 Q26 3.5 27.5 5 L43 20.5 Q44.5 22 44.5 24 Q44.5 26 43 27.5 L27.5 43 Q26 44.5 24 44.5 Q22 44.5 20.5 43 L5 27.5 Q3.5 26 3.5 24 Q3.5 22 5 20.5 L20.5 5 Q22 3.5 24 3.5Z',
-  circle: 'M24 2a22 22 0 1 0 0 44a22 22 0 1 0 0-44Z',
-}
-
 export interface CategoryIconProps {
   /** Une catégorie : clé prédéfinie, nom d'icône ou ancien emoji. */
   category?: { key?: string; icon?: string; color?: string }
@@ -274,11 +259,11 @@ export interface CategoryIconProps {
   /** Couleur du badge (par défaut : couleur de la catégorie, sinon du registre). */
   color?: string
   size?: IconSize
-  /** tint = fond teinté, solid = fond plein, ghost = contour seul, plain = icône nue. */
+  /** tint = fond teinté clair, solid = fond plein, ghost = contour seul, plain = icône nue. */
   tone?: 'tint' | 'solid' | 'ghost' | 'plain'
-  /** Couleur de l'icône (par défaut : celle du badge ; blanc sur fond plein). */
+  /** Couleur de l'icône (par défaut : teinte plus foncée du badge ; blanc sur fond plein). */
   iconColor?: string
-  /** Épaisseur de l'icône pour `plain` (ex. « bold »). */
+  /** Variante de l'icône pour `plain` (ex. « bold »). */
   weight?: IconWeight
   /** Taille en pixels pour `plain`. */
   px?: number
@@ -286,6 +271,13 @@ export interface CategoryIconProps {
   className?: string
 }
 
+/** Teinte plus foncée de la même couleur, pour que l'icône reste lisible sur le fond clair. */
+const darker = (color: string) => `color-mix(in srgb, ${color} 72%, black)`
+
+/**
+ * Petit carré arrondi : fond teinté clair + icône duotone dans une teinte plus foncée
+ * de la même couleur. Une couleur propre à chaque catégorie, règle ou action.
+ */
 export function CategoryIcon({
   category,
   name,
@@ -307,12 +299,11 @@ export function CategoryIcon({
 
   if (tone === 'plain') {
     if (!entry) return null
-    const size1 = px ?? PX[size] * 0.6
     return (
       <entry.Icon
         aria-hidden
         weight={weight}
-        size={size1}
+        size={px ?? PX[size] * 0.6}
         color={iconColor ?? 'currentColor'}
         className={`${flip} ${className}`}
       />
@@ -320,42 +311,33 @@ export function CategoryIcon({
   }
 
   const dim = PX[size]
-  const fill =
+  const background =
     tone === 'solid'
       ? base
       : tone === 'ghost'
         ? 'transparent'
-        : `color-mix(in srgb, ${base} 15%, white)`
-  const stroke =
-    tone === 'solid'
-      ? 'none'
-      : tone === 'ghost'
-        ? `color-mix(in srgb, ${base} 55%, transparent)`
-        : `color-mix(in srgb, ${base} 42%, white)`
-  const glyph = iconColor ?? (tone === 'solid' ? '#ffffff' : base)
+        : `color-mix(in srgb, ${base} 14%, white)`
+  const border =
+    tone === 'ghost' ? `1.5px solid color-mix(in srgb, ${base} 45%, transparent)` : 'none'
+  const glyph = iconColor ?? (tone === 'solid' ? '#ffffff' : tone === 'ghost' ? base : darker(base))
 
   return (
     <span
       aria-hidden
-      className={`relative inline-flex shrink-0 items-center justify-center ${className}`}
-      style={{ width: dim, height: dim }}
+      className={`inline-flex shrink-0 items-center justify-center ${className}`}
+      style={{
+        width: dim,
+        height: dim,
+        background,
+        border,
+        borderRadius: shape === 'circle' ? '9999px' : `${Math.round(dim * 0.3)}px`,
+        color: glyph,
+      }}
     >
-      <svg viewBox="0 0 48 48" width={dim} height={dim} className="absolute inset-0">
-        <path
-          d={SHAPES[shape]}
-          style={{ fill, stroke, strokeWidth: stroke === 'none' ? 0 : 1.6 }}
-          strokeLinejoin="round"
-        />
-      </svg>
       {entry ? (
-        <entry.Icon
-          weight={weight}
-          size={Math.round(dim * 0.5)}
-          color={glyph}
-          className={`relative ${flip}`}
-        />
+        <entry.Icon weight={weight} size={Math.round(dim * 0.54)} color={glyph} className={flip} />
       ) : (
-        <span className="relative leading-none" style={{ fontSize: Math.round(dim * 0.42) }}>
+        <span className="leading-none" style={{ fontSize: Math.round(dim * 0.45) }}>
           {fallbackText ?? '•'}
         </span>
       )}

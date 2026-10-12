@@ -231,4 +231,49 @@ describe('migration du programme enregistré (v2 → v3)', () => {
     expect(await upgraded.program.get(1)).toBeUndefined()
     upgraded.close()
   })
+
+  it('v4 : ajoute la catégorie « Crédit » et recalcule les budgets', async () => {
+    class V3DB extends Dexie {
+      constructor() {
+        super('migration-v4')
+        this.version(1).stores(SCHEMA_V1)
+        this.version(2).stores(SCHEMA_V2)
+        this.version(3).stores({})
+      }
+    }
+    const withCredit: Profile = {
+      ...profile,
+      charges: { ...profile.charges, creditCents: MAD(1000) },
+    }
+    const old = new V3DB()
+    await old.table('categories').bulkAdd([
+      { key: 'groceries', icon: 'groceries', color: '#3c9d6f', order: 1 },
+      { key: 'other', icon: 'other', color: '#7c8a84', order: 2 },
+    ])
+    await old.table('profile').put({ id: 1, profile: withCredit, updatedAt: 1 })
+    await old.table('program').put({
+      id: 1,
+      // ancien plan : le crédit était rangé dans « other »
+      plan: { status: 'ok', budgets: { other: MAD(1550) }, rules: [], week1: [] },
+      generatedAt: new Date(2026, 9, 10).getTime(),
+      weekDone: [2],
+    })
+    old.close()
+
+    const upgraded = new BudgetDB('migration-v4')
+    const credit = await upgraded.categories.where('key').equals('credit').first()
+    expect(credit).toBeDefined()
+    expect(credit!.order).toBe(3) // après les catégories existantes
+
+    const program = (await upgraded.program.get(1))!
+    expect(program.plan.budgets.credit).toBe(MAD(1000))
+    expect(program.plan.budgets.other ?? 0).toBeLessThan(MAD(500))
+    expect(program.weekDone).toEqual([2])
+
+    // idempotent : rouvrir ne duplique pas la catégorie
+    upgraded.close()
+    const again = new BudgetDB('migration-v4')
+    expect(await again.categories.where('key').equals('credit').count()).toBe(1)
+    again.close()
+  })
 })

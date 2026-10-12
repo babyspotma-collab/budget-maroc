@@ -454,6 +454,8 @@ describe('cohérence budgets / revenu (balayage de 3 000+ profils)', () => {
       expect(committed).toBeGreaterThan(plan.planningIncomeCents - 1000) // < 10 MAD d'écart d'arrondi
       expect(budgetsSum).toBe(plan.fixedCents + plan.spendableCents)
       for (const v of Object.values(plan.budgets)) expect(v).toBeGreaterThan(0)
+      // « Autres » : jamais plus de ~10 % du budget variable (+ arrondi de 10 MAD)
+      expect(plan.budgets.other ?? 0).toBeLessThanOrEqual(plan.spendableCents * 0.1 + 1000)
     }
     expect(checked).toBeGreaterThan(1000)
   })
@@ -488,6 +490,42 @@ describe('cohérence budgets / revenu (balayage de 3 000+ profils)', () => {
       expect(budgetsSum).toBe(plan.fixedCents + plan.spendableCents)
     }
     expect(deficits).toBeGreaterThan(300)
+  })
+})
+
+describe('budget « Autres » et crédit', () => {
+  const withCredit: Profile = {
+    ...merchant,
+    incomeKind: 'regular',
+    incomeCents: MAD(10000),
+    charges: { rentCents: MAD(2500), creditCents: MAD(1000), schoolCents: 0, billsCents: MAD(500), transportCents: MAD(600) },
+    debtMonthlyCents: 0,
+    debtTotalCents: 0,
+    daretMonthlyCents: 0,
+    dependents: 1,
+    goal: 'save',
+    problem: 'no_tracking',
+  }
+
+  it('range la mensualité de crédit dans sa propre catégorie, pas dans « Autres »', () => {
+    const plan = generatePlan(withCredit, NOW)
+    expect(plan.budgets.credit).toBe(MAD(1000))
+    // « Autres » ne contient que sa part variable, nettement sous le crédit
+    expect(plan.budgets.other).toBeLessThan(MAD(500))
+  })
+
+  it('« Autres » reste un fourre-tout : au plus ~10 % du budget variable', () => {
+    for (const p of [withCredit, employee, merchant, student]) {
+      const plan = generatePlan(p, NOW)
+      if (plan.status === 'deficit' || plan.spendableCents === 0) continue
+      const other = plan.budgets.other ?? 0
+      expect(other).toBeLessThanOrEqual(plan.spendableCents * 0.1 + 1000)
+    }
+  })
+
+  it('même pour un gros revenu, « Autres » reste modeste', () => {
+    const plan = generatePlan({ ...withCredit, incomeCents: MAD(30000) }, NOW)
+    expect(plan.budgets.other!).toBeLessThan(plan.budgets.groceries! / 2)
   })
 })
 

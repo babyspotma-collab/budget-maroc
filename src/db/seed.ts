@@ -12,5 +12,6 @@ export const DEFAULT_CATEGORIES: Omit<Category, 'id'>[] = [
   { key: 'education', icon: 'education', color: '#5b6fd6', order: 8 },
   { key: 'clothing', icon: 'clothing', color: '#d6578f', order: 9 },
   { key: 'family', icon: 'family', color: '#1f9e8f', order: 10 },
-  { key: 'other', icon: 'other', color: '#7c8a84', order: 11 },
+  { key: 'credit', icon: 'credit', color: '#6b7cc9', order: 11 },
+  { key: 'other', icon: 'other', color: '#7c8a84', order: 12 },
 ]

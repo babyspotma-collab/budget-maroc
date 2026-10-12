@@ -59,7 +59,7 @@ src/
 ```
 
 Icônes : un seul composant, `<CategoryIcon />` (`src/components/ui/CategoryIcon.tsx`), regroupe le registre
-d'icônes Phosphor (duotone), la forme des badges (étoile à 8 branches) et l'inversion RTL des icônes
+d'icônes Phosphor (duotone), la forme des badges (carré arrondi teinté) et l'inversion RTL des icônes
 directionnelles : changer de style se fait à cet endroit.
 
 Conventions : montants en **centimes entiers**, dates `YYYY-MM-DD`, mois `YYYY-MM`.

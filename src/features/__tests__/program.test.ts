@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db } from '../../db/database'
+import Dexie from 'dexie'
+import { BudgetDB, db, SCHEMA_V1, SCHEMA_V2 } from '../../db/database'
 import { resolveLimits } from '../../domain/budget'
 import type { Profile } from '../../domain/plan'
 import { setBudget } from '../budgets/actions'
@@ -177,5 +178,57 @@ describe('application du programme', () => {
   it('ne fait rien sans programme', async () => {
     expect(await applyProgram(NOW)).toBe(0)
     expect(await db.budgets.count()).toBe(0)
+  })
+})
+
+describe('migration du programme enregistré (v2 → v3)', () => {
+  it('régénère un ancien programme sans statut, en gardant la progression', async () => {
+    class LegacyDB extends Dexie {
+      constructor() {
+        super('migration-test')
+        this.version(1).stores(SCHEMA_V1)
+        this.version(2).stores(SCHEMA_V2)
+      }
+    }
+    const deficitProfile: Profile = {
+      ...profile,
+      incomeCents: MAD(3000),
+      charges: { rentCents: MAD(3500), creditCents: 0, schoolCents: 0, billsCents: MAD(300), transportCents: 0 },
+      dependents: 2,
+    }
+    const legacy = new LegacyDB()
+    await legacy.table('profile').put({ id: 1, profile: deficitProfile, updatedAt: 1 })
+    await legacy.table('program').put({
+      id: 1,
+      // ancien format : ni `status`, ni `deficit`
+      plan: { dailyCents: 0, budgets: { rent: MAD(3500) }, rules: [{ id: 'daily_cap', params: { dailyCents: 0 } }] },
+      generatedAt: new Date(2026, 9, 10).getTime(),
+      weekDone: [1, 4],
+      appliedAt: 123,
+    })
+    legacy.close()
+
+    const upgraded = new BudgetDB('migration-test')
+    const program = (await upgraded.program.get(1))!
+    expect(program.plan.status).toBe('deficit')
+    expect(program.plan.deficit?.gapCents).toBe(MAD(3500 + 300 + 500 - 3000)) // daret de 500 du profil de base
+    expect(program.plan.rules.map((r) => r.id)).not.toContain('daily_cap')
+    expect(program.weekDone).toEqual([1, 4])
+    expect(program.appliedAt).toBe(123)
+    upgraded.close()
+  })
+
+  it('ne casse rien sans programme enregistré', async () => {
+    class EmptyLegacy extends Dexie {
+      constructor() {
+        super('migration-empty')
+        this.version(1).stores(SCHEMA_V1)
+        this.version(2).stores(SCHEMA_V2)
+      }
+    }
+    new EmptyLegacy().close()
+    const upgraded = new BudgetDB('migration-empty')
+    expect(await upgraded.program.get(1)).toBeUndefined()
+    upgraded.close()
   })
 })
